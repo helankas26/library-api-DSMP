@@ -1,14 +1,14 @@
-const generateProfileId = async (joinDate, profiles) => {
-    const year = joinDate.getFullYear().toString();
-    const month = (joinDate.getMonth() + 1) < 10 ? "0" + (joinDate.getMonth() + 1).toString() : (joinDate.getMonth() + 1).toString();
-    const date = joinDate.getDate().toString();
+const generateId = async (createDate, collection) => {
+    const year = createDate.getFullYear().toString();
+    const month = (createDate.getMonth() + 1) < 10 ? "0" + (createDate.getMonth() + 1).toString() : (createDate.getMonth() + 1).toString();
+    const date = createDate.getDate().toString();
     const prefix = year + month + date;
-    joinDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(date))
+    createDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(date))
 
-    const docCount = profiles.length
+    const docCount = collection.length
 
     if (docCount > 0) {
-        const lastId = profiles[docCount - 1]._id;
+        const lastId = collection[docCount - 1]._id;
         const previousYear = lastId.slice(0, 4);
         let previousMonth = parseInt(lastId.slice(4, 6)) - 1;
         const previousDate = lastId.slice(6, 8);
@@ -17,7 +17,7 @@ const generateProfileId = async (joinDate, profiles) => {
         const previousPrefix = lastId.slice(0, 8);
         let counter = parseInt(lastId.slice(8, 10));
 
-        if (joinDate.getTime() === previousPrefixDate.getTime()) {
+        if (createDate.getTime() === previousPrefixDate.getTime()) {
             if (counter < 99) {
                 if (counter < 9) {
                     return previousPrefix + "0" + (++counter);
@@ -33,4 +33,4 @@ const generateProfileId = async (joinDate, profiles) => {
     }
 }
 
-module.exports = {generateProfileId};
+module.exports = {generateId};
