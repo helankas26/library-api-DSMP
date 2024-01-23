@@ -2,7 +2,7 @@ const Config = require('../models/ConfigSchema')
 
 const findAllConfigs = async () => {
     try {
-        return Config.find();
+        return await Config.find();
     } catch (error) {
         throw error;
     }
@@ -41,12 +41,11 @@ const createConfig = async (configData) => {
     } catch (error) {
         throw error;
     }
-
 }
 
 const findConfigById = async (params) => {
     try {
-        return Config.findById(params.id);
+        return await Config.findById(params.id);
     } catch (error) {
         throw error;
     }
@@ -54,7 +53,7 @@ const findConfigById = async (params) => {
 
 const updateConfig = async (params, configData) => {
     try {
-        return Config.findByIdAndUpdate(params.id, configData, {new: true});
+        return await Config.findByIdAndUpdate(params.id, configData, {new: true});
     } catch (error) {
         throw error;
     }
@@ -62,7 +61,7 @@ const updateConfig = async (params, configData) => {
 
 const deleteConfig = async (params) => {
     try {
-        return Config.findByIdAndDelete(params.id);
+        return await Config.findByIdAndDelete(params.id);
     } catch (error) {
         throw error;
     }
