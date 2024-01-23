@@ -9,7 +9,7 @@ dotenv.config();
 const {PORT} = require('./config/serverConfig');
 
 //----------------------- Routes import
-// const userRoute = require('./route/UserRoute');
+const configRoute = require('./src/routes/api/ConfigRoute');
 //-----------------------
 
 const app = express();
@@ -38,4 +38,5 @@ mongoose.connect(process.env.MONGODB_URI)
 
 
 //----------------------- Routes
-// app.use('/api/v1/users', userRoute);
+app.use('/api/v1/config', configRoute);
+//-----------------------

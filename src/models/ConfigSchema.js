@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose');
+
 const Profile = require('./ProfileSchema');
 
 const configSchema = new Schema({
@@ -8,7 +9,7 @@ const configSchema = new Schema({
             required: true
         },
         librarian: {
-            type: Schema.Types.ObjectId,
+            type: String,
             ref: 'Profile',
             required: true,
             validate: {
@@ -23,7 +24,6 @@ const configSchema = new Schema({
             required: true,
             default: () => Date.now()
         },
-
     },
     subscription: {
         fee: {
@@ -31,7 +31,7 @@ const configSchema = new Schema({
             required: true
         },
         librarian: {
-            type: Schema.Types.ObjectId,
+            type: String,
             ref: 'Profile',
             required: true,
             validate: {
@@ -46,7 +46,6 @@ const configSchema = new Schema({
             required: true,
             default: () => Date.now()
         },
-
     },
     fine: {
         fee: {
@@ -54,7 +53,7 @@ const configSchema = new Schema({
             required: true
         },
         librarian: {
-            type: Schema.Types.ObjectId,
+            type: String,
             ref: 'Profile',
             required: true,
             validate: {
@@ -69,7 +68,6 @@ const configSchema = new Schema({
             required: true,
             default: () => Date.now()
         },
-
     },
     noOfReservation: {
         count: {
@@ -77,7 +75,7 @@ const configSchema = new Schema({
             required: true
         },
         librarian: {
-            type: Schema.Types.ObjectId,
+            type: String,
             ref: 'Profile',
             required: true,
             validate: {
@@ -92,7 +90,6 @@ const configSchema = new Schema({
             required: true,
             default: () => Date.now()
         },
-
     },
     noOfBorrow: {
         count: {
@@ -100,7 +97,7 @@ const configSchema = new Schema({
             required: true
         },
         librarian: {
-            type: Schema.Types.ObjectId,
+            type: String,
             ref: 'Profile',
             required: true,
             validate: {
@@ -115,7 +112,6 @@ const configSchema = new Schema({
             required: true,
             default: () => Date.now()
         },
-
     },
     borrowableDate: {
         count: {
@@ -123,7 +119,7 @@ const configSchema = new Schema({
             required: true
         },
         librarian: {
-            type: Schema.Types.ObjectId,
+            type: String,
             ref: 'Profile',
             required: true,
             validate: {
@@ -138,7 +134,12 @@ const configSchema = new Schema({
             required: true,
             default: () => Date.now()
         },
-
+    },
+    createdAt: {
+        type: Date,
+        required: true,
+        default: () => Date.now(),
+        immutable: true,
     },
 });
 
