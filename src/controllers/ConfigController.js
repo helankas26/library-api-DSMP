@@ -1,6 +1,6 @@
 const configService = require('../services/ConfigService');
 
-const findAllConfigs = async (req, resp) => {
+const findAllConfigs = (req, resp) => {
     configService.findAllConfigs().then(configs => {
         resp.status(200).json({
             'status': 'success',
@@ -17,7 +17,7 @@ const findAllConfigs = async (req, resp) => {
     });
 }
 
-const createConfig = async (req, resp) => {
+const createConfig = (req, resp) => {
     configService.createConfig(req.body).then(config => {
         resp.status(201).json({
             'status': 'success',
@@ -33,7 +33,7 @@ const createConfig = async (req, resp) => {
     });
 }
 
-const findConfigById = async (req, resp) => {
+const findConfigById = (req, resp) => {
     configService.findConfigById(req.params).then(config => {
         resp.status(200).json({
             'status': 'success',
@@ -42,14 +42,14 @@ const findConfigById = async (req, resp) => {
             }
         });
     }).catch(err => {
-        return resp.status(404).json({
+        return resp.status(500).json({
             'status': 'error',
             'message': err.message
         });
     });
 }
 
-const updateConfig = async (req, resp) => {
+const updateConfig = (req, resp) => {
     configService.updateConfig(req.params, req.body).then(config => {
         resp.status(201).json({
             'status': 'success',
@@ -65,7 +65,7 @@ const updateConfig = async (req, resp) => {
     });
 }
 
-const deleteConfig = async (req, resp) => {
+const deleteConfig = (req, resp) => {
     configService.deleteConfig(req.params).then(config => {
         resp.status(200).json({
             'status': 'success',
