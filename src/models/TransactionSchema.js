@@ -1,6 +1,4 @@
-import mongoose from 'mongoose';
-
-const {Schema, model} = mongoose;
+const {Schema, model} = require('mongoose');
 const Config = require('./ConfigSchema');
 const Profile = require('./ProfileSchema');
 
