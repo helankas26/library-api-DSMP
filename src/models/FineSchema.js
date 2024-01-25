@@ -1,7 +1,6 @@
 const {Schema, model} = require('mongoose');
 
 const Profile = require('./ProfileSchema');
-const Config = require('./ConfigSchema');
 const Book = require('./BookSchema');
 
 const fineSchema = new Schema({
