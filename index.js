@@ -10,6 +10,7 @@ const {PORT} = require('./config/serverConfig');
 
 //----------------------- Routes import
 const configRoute = require('./src/routes/api/ConfigRoute');
+const profileRoute = require('./src/routes/api/ProfileRoute');
 //-----------------------
 
 const app = express();
@@ -38,5 +39,6 @@ mongoose.connect(process.env.MONGODB_URI)
 
 
 //----------------------- Routes
-app.use('/api/v1/config', configRoute);
+app.use('/api/v1/configs', configRoute);
+app.use('/api/v1/profiles', profileRoute);
 //-----------------------

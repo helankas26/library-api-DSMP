@@ -1,5 +1,6 @@
 const {Schema, model} = require('mongoose');
-const Config = require('./ConfigSchema');
+
+const getProfileModel = () => require('./ConfigSchema');
 
 const profileSchema = new Schema({
     _id: {
@@ -16,6 +17,7 @@ const profileSchema = new Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
         lowercase: true,
     },
@@ -39,6 +41,7 @@ const profileSchema = new Schema({
         default: 0,
         validate: {
             validator: async (value) => {
+                const Config = getProfileModel();
                 const config = await Config.findOne();
                 return value >= 0 && value <= config.noOfReservation.count;
             }
@@ -50,6 +53,7 @@ const profileSchema = new Schema({
         default: 0,
         validate: {
             validator: async (value) => {
+                const Config = getProfileModel();
                 const config = await Config.findOne();
                 return value >= 0 && value <= config.noOfBorrow.count;
             }
@@ -62,5 +66,14 @@ const profileSchema = new Schema({
         immutable: true,
     },
 });
+
+profileSchema.statics.findByCreatedAtForCurrentMonth = function () {
+    return this.find({
+        createdAt: {
+            $gte: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()),
+            $lt: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 1)
+        }
+    });
+};
 
 module.exports = model('Profile', profileSchema);
