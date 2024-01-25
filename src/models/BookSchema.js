@@ -5,6 +5,13 @@ const bookSchema = new Schema({
         type: String,
         required: true
     },
+    edition: {
+        type: String
+    },
+    cover: {
+        type: String,
+        required: true
+    },
     description: {
         type: String,
         required: true
@@ -16,19 +23,18 @@ const bookSchema = new Schema({
     availableCount: {
         type: Number,
         required: true,
-        default: this.noOfCopies,
         validate: {
-            validator: async  (value) => {
+            validator: function (value) {
                 return value >= 0 && value <= this.noOfCopies;
             }
-        },
+        }
     },
     createdAt: {
         type: Date,
         required: true,
         default: () => Date.now(),
-        immutable: true,
-    },
+        immutable: true
+    }
 });
 
 module.exports = model('Book', bookSchema);

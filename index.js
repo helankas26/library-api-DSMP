@@ -13,6 +13,7 @@ const configRoute = require('./src/routes/api/ConfigRoute');
 const profileRoute = require('./src/routes/api/ProfileRoute');
 const categoryRoute = require('./src/routes/api/CategoryRoute');
 const authorRoute = require('./src/routes/api/AuthorRoute');
+const bookRoute = require('./src/routes/api/BookRoute');
 //-----------------------
 
 const app = express();
@@ -45,4 +46,5 @@ app.use('/api/v1/configs', configRoute);
 app.use('/api/v1/profiles', profileRoute);
 app.use('/api/v1/categories', categoryRoute);
 app.use('/api/v1/authors', authorRoute);
+app.use('/api/v1/books', bookRoute);
 //-----------------------
