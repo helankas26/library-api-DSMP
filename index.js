@@ -18,6 +18,7 @@ const admissionRoute = require('./src/routes/api/AdmissionRoute');
 const fineRoute = require('./src/routes/api/FineRoute');
 const reservationRoute = require('./src/routes/api/ReservationRoute');
 const transactionRoute = require('./src/routes/api/TransactionRoute');
+const subscriptionRoute = require('./src/routes/api/SubscriptionRoute');
 //-----------------------
 
 const app = express();
@@ -55,4 +56,5 @@ app.use('/api/v1/admissions', admissionRoute);
 app.use('/api/v1/fines', fineRoute);
 app.use('/api/v1/reservations', reservationRoute);
 app.use('/api/v1/transactions', transactionRoute);
+app.use('/api/v1/subscriptions', subscriptionRoute);
 //-----------------------
