@@ -1,5 +1,4 @@
 const {Schema, model} = require('mongoose');
-const Config = require('./ConfigSchema');
 const Profile = require('./ProfileSchema');
 
 const transactionSchema = new Schema({
@@ -7,11 +6,11 @@ const transactionSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: 'Book',
-            required: true,
+            required: true
         }
     ],
     member: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Profile',
         required: true,
         validate: {
@@ -19,15 +18,16 @@ const transactionSchema = new Schema({
                 const user = await Profile.findOne({_id: value, type: 'MEMBER'});
                 return !!user;
             }
-        },
+        }
     },
     status: {
         type: String,
+        default: 'BORROWED',
         enum: ['BORROWED', 'RETURNED', 'OVERDUE'],
-        required: true,
+        required: true
     },
     librarian: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Profile',
         required: true,
         validate: {
@@ -35,23 +35,22 @@ const transactionSchema = new Schema({
                 const user = await Profile.findOne({_id: value, type: 'LIBRARIAN'});
                 return !!user;
             }
-        },
+        }
     },
-    borrowedAt: {
+    issuedAt: {
         type: Date,
         required: true,
         default: () => Date.now(),
-        immutable: true,
+        immutable: true
     },
-    returnAt: {
+    dueAt: {
         type: Date,
         required: true,
-        default: async () => {
-            const config = await Config.findOne();
-            return Date.now() + config.borrowableDate.count * 24 * 60 * 60 * 1000
-        },
-        immutable: true,
+        immutable: true
     },
+    returnedAt: {
+        type: Date
+    }
 });
 
 module.exports = model('Transaction', transactionSchema);
