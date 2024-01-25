@@ -1,4 +1,5 @@
 const Admission = require('../models/AdmissionSchema');
+const Config = require("../models/ConfigSchema");
 
 const findAllAdmissions = async () => {
     try {
@@ -11,7 +12,10 @@ const findAllAdmissions = async () => {
 const createAdmission = async (admissionData) => {
     try {
         const admission = new Admission({
-            fee: admissionData.fee,
+            fee: admissionData.fee ? admissionData.fee : await (async () => {
+                const config = await Config.findOne();
+                return config.admission.fee;
+            })(),
             member: admissionData.member,
             librarian: admissionData.user.profile
         });

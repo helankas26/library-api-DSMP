@@ -7,10 +7,6 @@ const admissionSchema = new Schema({
     fee: {
         type: Number,
         required: true,
-        default: async () => {
-            const config = await Config.findOne();
-            return config.admission.fee;
-        },
         validate: {
             validator: async (value) => {
                 const config = await Config.findOne();
