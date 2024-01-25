@@ -1,5 +1,8 @@
 const {Schema, model} = require('mongoose');
+
 const Profile = require('./ProfileSchema');
+const Config = require('./ConfigSchema');
+const Book = require('./BookSchema');
 
 const fineSchema = new Schema({
     fee: {
@@ -7,7 +10,7 @@ const fineSchema = new Schema({
         required: true
     },
     member: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Profile',
         required: true,
         validate: {
@@ -16,18 +19,27 @@ const fineSchema = new Schema({
                 return !!user;
             }
         },
+        immutable: true
     },
     book: {
         type: Schema.Types.ObjectId,
         ref: 'Book',
         required: true,
+        validate: {
+            validator: async (value) => {
+                const book = await Book.findOne({_id: value});
+                return !!book;
+            }
+        },
+        immutable: true
     },
     noOfDate: {
         type: Number,
-        required: true
+        required: true,
+        immutable: true
     },
     librarian: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Profile',
         required: true,
         validate: {
@@ -35,14 +47,14 @@ const fineSchema = new Schema({
                 const user = await Profile.findOne({_id: value, type: 'LIBRARIAN'});
                 return !!user;
             }
-        },
+        }
     },
     createdAt: {
         type: Date,
         required: true,
         default: () => Date.now(),
-        immutable: true,
-    },
+        immutable: true
+    }
 });
 
 module.exports = model('Fine', fineSchema);

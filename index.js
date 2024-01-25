@@ -15,6 +15,7 @@ const categoryRoute = require('./src/routes/api/CategoryRoute');
 const authorRoute = require('./src/routes/api/AuthorRoute');
 const bookRoute = require('./src/routes/api/BookRoute');
 const admissionRoute = require('./src/routes/api/AdmissionRoute');
+const fineRoute = require('./src/routes/api/FineRoute');
 //-----------------------
 
 const app = express();
@@ -49,4 +50,5 @@ app.use('/api/v1/categories', categoryRoute);
 app.use('/api/v1/authors', authorRoute);
 app.use('/api/v1/books', bookRoute);
 app.use('/api/v1/admissions', admissionRoute);
+app.use('/api/v1/fines', fineRoute);
 //-----------------------
