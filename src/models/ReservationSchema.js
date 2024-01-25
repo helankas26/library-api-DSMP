@@ -5,10 +5,10 @@ const reservationSchema = new Schema({
     book: {
         type: Schema.Types.ObjectId,
         ref: 'Book',
-        required: true,
+        required: true
     },
     member: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Profile',
         required: true,
         validate: {
@@ -16,24 +16,25 @@ const reservationSchema = new Schema({
                 const user = await Profile.findOne({_id: value, type: 'MEMBER'});
                 return !!user;
             }
-        },
+        }
     },
     status: {
         type: String,
+        default: 'RESERVED',
         enum: ['RESERVED', 'CANCELLED', 'BORROWED', 'EXPIRED'],
-        required: true,
+        required: true
     },
     reservationAt: {
         type: Date,
         required: true,
         default: () => Date.now(),
-        immutable: true,
+        immutable: true
     },
     dueAt: {
         type: Date,
         required: true,
         default: () => Date.now() + 4 * 24 * 60 * 60 * 1000,
-        immutable: true,
+        immutable: true
     },
 });
 
