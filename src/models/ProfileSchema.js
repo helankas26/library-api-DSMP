@@ -35,6 +35,9 @@ const profileSchema = new Schema({
         required: true,
         default: "MEMBER",
     },
+    paymentStatus: {
+        type: Number
+    },
     reservationCount: {
         type: Number,
         required: true,
@@ -65,6 +68,14 @@ const profileSchema = new Schema({
         default: () => Date.now(),
         immutable: true,
     },
+});
+
+profileSchema.pre('save', function (next) {
+    if (this.type === 'MEMBER') {
+        this.paymentStatus = 1
+    }
+
+    next();
 });
 
 profileSchema.statics.findByCreatedAtForCurrentMonth = function () {
