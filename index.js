@@ -7,6 +7,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const {PORT} = require('./config/serverConfig');
+const globalErrorHandler = require('./src/middlewares/GlobalErrorHandler');
+const NotFoundError = require("./src/errors/NotFoundError");
 
 //----------------------- Routes import
 const configRoute = require('./src/routes/api/ConfigRoute');
@@ -21,6 +23,13 @@ const transactionRoute = require('./src/routes/api/TransactionRoute');
 const subscriptionRoute = require('./src/routes/api/SubscriptionRoute');
 //-----------------------
 
+process.on('uncaughtException', (err) => {
+    console.error(err.name, err.message);
+    console.log('Uncaught Exception occurred! Shouting down...');
+
+    process.exit(1);
+});
+
 const app = express();
 app.use(cors());
 
@@ -32,19 +41,22 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => {
-        console.log('Connected to MongoDB');
+mongoose.connect(process.env.MONGODB_URI).then(() => {
+    console.log('Connected to MongoDB');
+})
 
-        app.listen(PORT, () => {
-            console.log(`server started & running on port ${PORT}`);
-        });
-    })
-    .catch((error) => {
-        console.error('Error connecting to MongoDB:', error.message);
+const server = app.listen(PORT, () => {
+    console.log(`server started & running on port ${PORT}`);
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error(err.name, err.message);
+    console.log('Unhandled Rejection occurred! Shouting down...');
+
+    server.close(() => {
         process.exit(1);
     });
-
+});
 
 //----------------------- Routes
 app.use('/api/v1/configs', configRoute);
@@ -57,4 +69,11 @@ app.use('/api/v1/fines', fineRoute);
 app.use('/api/v1/reservations', reservationRoute);
 app.use('/api/v1/transactions', transactionRoute);
 app.use('/api/v1/subscriptions', subscriptionRoute);
+
+app.all('*', (req, res, next) => {
+    const err = new NotFoundError(`Can not find ${req.originalUrl} on the server`);
+    next(err);
+});
 //-----------------------
+
+app.use(globalErrorHandler);
