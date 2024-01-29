@@ -2,6 +2,7 @@ const {NODE_ENV} = require('../../config/serverConfig');
 const CastError = require("../errors/CastError");
 const DuplicateKeyError = require("../errors/DuplicateKeyError");
 const ValidationErrorHandler = require("../errors/ValidationErrorHandler");
+const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 
 const devErrors = (err, res) => {
     return res.status(err.statusCode).json({
@@ -25,6 +26,14 @@ const validationErrorHandler = (err) => {
     const errorMsg = errors.join(' ');
 
     return new ValidationErrorHandler(`Invalid input data: ${errorMsg}`);
+}
+
+const tokenExpiredErrorHandler = (err) => {
+    return new UnauthorizedAccessError('Token has expired. Please login again!');
+}
+
+const jsonWebTokenErrorHandler = (err) => {
+    return new UnauthorizedAccessError('Invalid Token. Please login again!');
 }
 
 const prodErrors = (err, res) => {
@@ -51,6 +60,8 @@ const globalErrorHandler = (error, req, res, next) => {
         if (error.name === 'CastError') error = castErrorHandler(error);
         if (error.code === 11000) error = duplicateKeyErrorHandler(error);
         if (error.name === 'ValidationError') error = validationErrorHandler(error);
+        if (error.name === 'TokenExpiredError') error = tokenExpiredErrorHandler(error);
+        if (error.name === 'JsonWebTokenError') error = jsonWebTokenErrorHandler(error);
 
         prodErrors(error, res);
     }
