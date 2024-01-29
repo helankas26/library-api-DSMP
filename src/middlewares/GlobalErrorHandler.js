@@ -22,9 +22,9 @@ const duplicateKeyErrorHandler = (err) => {
 
 const validationErrorHandler = (err) => {
     const errors = Object.values(err.errors).map(val => val.message);
-    const errorMsg = errors.join('.\n');
+    const errorMsg = errors.join(' ');
 
-    return new ValidationErrorHandler(`Invalid input data\n: ${errorMsg}`);
+    return new ValidationErrorHandler(`Invalid input data: ${errorMsg}`);
 }
 
 const prodErrors = (err, res) => {
@@ -50,7 +50,7 @@ const globalErrorHandler = (error, req, res, next) => {
     } else if (NODE_ENV === 'production') {
         if (error.name === 'CastError') error = castErrorHandler(error);
         if (error.code === 11000) error = duplicateKeyErrorHandler(error);
-        if (error.code === 'ValidationError') error = validationErrorHandler(error);
+        if (error.name === 'ValidationError') error = validationErrorHandler(error);
 
         prodErrors(error, res);
     }
