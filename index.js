@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const sanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 // const bodyParser = require('body-parser');
 
 dotenv.config();
@@ -54,6 +55,7 @@ app.use(bodyParser.json())
 app.use(express.json({limit: '10kb'}));
 app.use(sanitize());
 app.use(xss());
+app.use(hpp());
 app.use(express.urlencoded({extended: true}));
 
 
