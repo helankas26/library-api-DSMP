@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const rateLimit = require('express-rate-limit');
 // const bodyParser = require('body-parser');
 
 dotenv.config();
@@ -33,6 +34,14 @@ process.on('uncaughtException', (err) => {
 
 const app = express();
 app.use(cors());
+
+let limiter = rateLimit({
+    max: 1000,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP. Please try after one hour.'
+});
+
+app.use('/api', limiter);
 
 /*
 app.use(bodyParser.urlencoded({extended: false}))
