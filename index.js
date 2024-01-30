@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const sanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 // const bodyParser = require('body-parser');
 
 dotenv.config();
@@ -50,6 +52,8 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 */
 app.use(express.json({limit: '10kb'}));
+app.use(sanitize());
+app.use(xss());
 app.use(express.urlencoded({extended: true}));
 
 
