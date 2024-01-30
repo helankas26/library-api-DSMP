@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 // const bodyParser = require('body-parser');
 
 dotenv.config();
@@ -33,6 +34,7 @@ process.on('uncaughtException', (err) => {
 });
 
 const app = express();
+app.use(helmet());
 app.use(cors());
 
 let limiter = rateLimit({
@@ -47,7 +49,7 @@ app.use('/api', limiter);
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 */
-app.use(express.json());
+app.use(express.json({limit: '10kb'}));
 app.use(express.urlencoded({extended: true}));
 
 
