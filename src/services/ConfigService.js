@@ -8,9 +8,9 @@ const findAllConfigs = async () => {
     }
 }
 
-const createConfig = async (reqBody) => {
+const createConfig = async (req) => {
     try {
-        return await configRepository.createConfig(reqBody);
+        return await configRepository.createConfig(req);
     } catch (error) {
         throw error;
     }
@@ -24,9 +24,9 @@ const findConfigById = async (reqParams) => {
     }
 }
 
-const updateConfig = async (reqParams, reqBody) => {
+const updateConfig = async (reqParams, req) => {
     try {
-        return await configRepository.updateConfig(reqParams, reqBody);
+        return await configRepository.updateConfig(reqParams, req);
     } catch (error) {
         throw error;
     }

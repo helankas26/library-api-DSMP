@@ -1,85 +1,32 @@
 const configService = require('../services/ConfigService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllConfigs = (req, resp) => {
-    configService.findAllConfigs().then(configs => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                configs,
-                count: configs.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const createConfig = (req, resp) => {
-    configService.createConfig(req.body).then(config => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                config
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllConfigs = asyncErrorHandler(async (req, resp, next) => {
+    const configs = await configService.findAllConfigs();
+    await sendResponse(resp, 200, {configs: configs, count: configs.length});
+});
 
-const findConfigById = (req, resp) => {
-    configService.findConfigById(req.params).then(config => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                config
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createConfig = asyncErrorHandler(async (req, resp, next) => {
+    const config = await configService.createConfig(req);
+    await sendResponse(resp, 201, {config});
+});
 
-const updateConfig = (req, resp) => {
-    configService.updateConfig(req.params, req.body).then(config => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                config
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findConfigById = asyncErrorHandler(async (req, resp, next) => {
+    const config = await configService.findConfigById(req.params);
+    await sendResponse(resp, 200, {config});
+});
 
-const deleteConfig = (req, resp) => {
-    configService.deleteConfig(req.params).then(config => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': config._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const updateConfig = asyncErrorHandler(async (req, resp, next) => {
+    const config = await configService.updateConfig(req.params, req);
+    await sendResponse(resp, 201, {config});
+});
+
+const deleteConfig = asyncErrorHandler(async (req, resp, next) => {
+    const config = await configService.deleteConfig(req.params);
+    await sendResponse(resp, 204, {id: config.id});
+});
 
 module.exports = {
     findAllConfigs, createConfig, findConfigById, updateConfig, deleteConfig

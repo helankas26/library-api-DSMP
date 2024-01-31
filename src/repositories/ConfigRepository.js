@@ -1,4 +1,5 @@
 const Config = require('../models/ConfigSchema')
+const {updateConfigReqObj} = require("../utils/FilterRequestUtil");
 
 const findAllConfigs = async () => {
     try {
@@ -8,32 +9,34 @@ const findAllConfigs = async () => {
     }
 }
 
-const createConfig = async (configData) => {
+const createConfig = async (req) => {
     try {
+        const configData = req.body;
+
         const config = new Config({
             admission: {
                 fee: configData.admission.fee,
-                librarian: configData.user.profile
+                librarian: req.user.profile
             },
             subscription: {
                 fee: configData.subscription.fee,
-                librarian: configData.user.profile
+                librarian: req.user.profile
             },
             fine: {
                 fee: configData.fine.fee,
-                librarian: configData.user.profile
+                librarian: req.user.profile
             },
             noOfReservation: {
                 count: configData.noOfReservation.count,
-                librarian: configData.user.profile
+                librarian: req.user.profile
             },
             noOfBorrow: {
                 count: configData.noOfBorrow.count,
-                librarian: configData.user.profile
+                librarian: req.user.profile
             },
             borrowableDate: {
                 count: configData.borrowableDate.count,
-                librarian: configData.user.profile
+                librarian: req.user.profile
             },
         });
 
@@ -51,9 +54,11 @@ const findConfigById = async (params) => {
     }
 }
 
-const updateConfig = async (params, configData) => {
+const updateConfig = async (params, req) => {
     try {
-        return await Config.findByIdAndUpdate(params.id, configData, {new: true});
+        const configData = updateConfigReqObj(req);
+
+        return await Config.findByIdAndUpdate(params.id, configData, {new: true, runValidators: true});
     } catch (error) {
         throw error;
     }

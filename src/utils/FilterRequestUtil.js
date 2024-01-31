@@ -8,4 +8,17 @@ const filterReqObj = (obj, ...allowedFields) => {
     return newObj;
 }
 
-module.exports = {filterReqObj};
+const updateConfigReqObj = (req) => {
+    const obj = req.body;
+
+    const newObj = {};
+    Object.keys(obj).map(prop => {
+        obj[prop].librarian = req.user.profile;
+        obj[prop].updateAt = Date.now();
+        newObj[prop] = obj[prop];
+    });
+
+    return newObj;
+}
+
+module.exports = {filterReqObj, updateConfigReqObj};
