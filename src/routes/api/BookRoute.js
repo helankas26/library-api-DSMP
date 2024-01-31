@@ -2,6 +2,7 @@ const express = require('express');
 
 const bookController = require('../../controllers/BookController');
 const paramMiddleware = require('../../middlewares/ParamMiddleware');
+const authMiddleware = require('../../middlewares/AuthMiddleware');
 const Book = require('../../models/BookSchema')
 
 const router = express.Router();
@@ -12,11 +13,11 @@ router.param('id', async (req, res, next, value) => {
 
 router.route('/')
     .get(bookController.findAllBooks)
-    .post(bookController.createBook);
+    .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.createBook);
 
 router.route('/:id')
-    .get(bookController.findBookById)
-    .patch(bookController.updateBook)
-    .delete(bookController.deleteBook);
+    .get(authMiddleware.verifyToken, bookController.findBookById)
+    .patch(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.updateBook)
+    .delete(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.deleteBook);
 
 module.exports = router;

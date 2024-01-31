@@ -11,13 +11,15 @@ router.param('id', async (req, res, next, value) => {
     await paramMiddleware.verifyId(req, res, next, value, User);
 });
 
-router.route('/').get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), userController.findAllUsers)
+router.use(authMiddleware.verifyToken);
 
-router.route('/').patch(authMiddleware.verifyToken, userController.updateUser);
-router.route('/changePassword').patch(authMiddleware.verifyToken, userController.changePassword);
+router.route('/').get(authMiddleware.checkPermission('ADMIN'), userController.findAllUsers)
+
+router.route('/').patch(userController.updateUser);
+router.route('/changePassword').patch(userController.changePassword);
 
 router.route('/:id')
-    .get(authMiddleware.verifyToken, userController.findUserById)
-    .delete(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), userController.deleteUser);
+    .get(authMiddleware.checkPermission('ADMIN'), userController.findUserById)
+    .delete(authMiddleware.checkPermission('ADMIN'), userController.deleteUser);
 
 module.exports = router;

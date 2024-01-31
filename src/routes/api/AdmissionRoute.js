@@ -11,13 +11,15 @@ router.param('id', async (req, res, next, value) => {
     await paramMiddleware.verifyId(req, res, next, value, Admission);
 });
 
+router.use(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'));
+
 router.route('/')
-    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.findAllAdmissions)
-    .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.createAdmission);
+    .get(admissionController.findAllAdmissions)
+    .post(admissionController.createAdmission);
 
 router.route('/:id')
-    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.findAdmissionById)
-    .patch(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.updateAdmission)
-    .delete(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.deleteAdmission);
+    .get(admissionController.findAdmissionById)
+    .patch(admissionController.updateAdmission)
+    .delete(admissionController.deleteAdmission);
 
 module.exports = router;
