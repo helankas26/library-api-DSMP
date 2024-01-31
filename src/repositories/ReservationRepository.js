@@ -31,7 +31,7 @@ const findReservationById = async (params) => {
 
 const updateReservation = async (params, reservationData) => {
     try {
-        return await Reservation.findByIdAndUpdate(params.id, reservationData, {new: true});
+        return await Reservation.findByIdAndUpdate(params.id, reservationData, {new: true, runValidators: true});
     } catch (error) {
         throw error;
     }

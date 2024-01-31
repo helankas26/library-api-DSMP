@@ -5,7 +5,8 @@ const reservationSchema = new Schema({
     book: {
         type: Schema.Types.ObjectId,
         ref: 'Book',
-        required: true
+        required: true,
+        immutable: true
     },
     member: {
         type: String,
@@ -16,7 +17,8 @@ const reservationSchema = new Schema({
                 const user = await Profile.findOne({_id: value, type: 'MEMBER'});
                 return !!user;
             }
-        }
+        },
+        immutable: true
     },
     status: {
         type: String,
@@ -35,7 +37,7 @@ const reservationSchema = new Schema({
         required: true,
         default: () => Date.now() + 4 * 24 * 60 * 60 * 1000,
         immutable: true
-    },
+    }
 });
 
 module.exports = model('Reservation', reservationSchema);

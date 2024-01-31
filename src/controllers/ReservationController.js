@@ -1,84 +1,32 @@
 const reservationService = require('../services/ReservationService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllReservations = (req, resp) => {
-    reservationService.findAllReservations().then(reservations => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                reservations,
-                count: reservations.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createReservation = (req, resp) => {
-    reservationService.createReservation(req.body).then(reservation => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                reservation
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findReservationById = (req, resp) => {
-    reservationService.findReservationById(req.params).then(reservation => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                reservation
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllReservations = asyncErrorHandler(async (req, resp, next) => {
+    const reservations = await reservationService.findAllReservations();
+    await sendResponse(resp, 200, {reservations: reservations, count: reservations.length});
+});
 
-const updateReservation = (req, resp) => {
-    reservationService.updateReservation(req.params, req.body).then(reservation => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                reservation
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createReservation = asyncErrorHandler(async (req, resp, next) => {
+    const reservation = await reservationService.createReservation(req.body);
+    await sendResponse(resp, 201, {reservation});
+});
 
-const deleteReservation = (req, resp) => {
-    reservationService.deleteReservation(req.params).then(reservation => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': reservation._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findReservationById = asyncErrorHandler(async (req, resp, next) => {
+    const reservation = await reservationService.findReservationById(req.params);
+    await sendResponse(resp, 200, {reservation});
+});
+
+const updateReservation = asyncErrorHandler(async (req, resp, next) => {
+    const reservation = await reservationService.updateReservation(req.params, req.body);
+    await sendResponse(resp, 201, {reservation});
+});
+
+const deleteReservation = asyncErrorHandler(async (req, resp, next) => {
+    const reservation = await reservationService.deleteReservation(req.params);
+    await sendResponse(resp, 204, {id: reservation.id});
+});
 
 module.exports = {
     findAllReservations, createReservation, findReservationById, updateReservation, deleteReservation
