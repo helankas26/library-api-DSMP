@@ -18,7 +18,8 @@ const transactionSchema = new Schema({
                 const user = await Profile.findOne({_id: value, type: 'MEMBER'});
                 return !!user;
             }
-        }
+        },
+        immutable: true
     },
     status: {
         type: String,

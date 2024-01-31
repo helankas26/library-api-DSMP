@@ -1,84 +1,32 @@
 const transactionService = require('../services/TransactionService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllTransactions = (req, resp) => {
-    transactionService.findAllTransactions().then(transactions => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                transactions,
-                count: transactions.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createTransaction = (req, resp) => {
-    transactionService.createTransaction(req.body).then(transaction => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                transaction
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findTransactionById = (req, resp) => {
-    transactionService.findTransactionById(req.params).then(transaction => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                transaction
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllTransactions = asyncErrorHandler(async (req, resp, next) => {
+    const transactions = await transactionService.findAllTransactions();
+    await sendResponse(resp, 200, {transactions: transactions, count: transactions.length});
+});
 
-const updateTransaction = (req, resp) => {
-    transactionService.updateTransaction(req.params, req.body).then(transaction => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                transaction
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createTransaction = asyncErrorHandler(async (req, resp, next) => {
+    const transaction = await transactionService.createTransaction(req);
+    await sendResponse(resp, 201, {transaction});
+});
 
-const deleteTransaction = (req, resp) => {
-    transactionService.deleteTransaction(req.params).then(transaction => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': transaction._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findTransactionById = asyncErrorHandler(async (req, resp, next) => {
+    const transaction = await transactionService.findTransactionById(req.params);
+    await sendResponse(resp, 200, {transaction});
+});
+
+const updateTransaction = asyncErrorHandler(async (req, resp, next) => {
+    const transaction = await transactionService.updateTransaction(req.params, req);
+    await sendResponse(resp, 201, {transaction});
+});
+
+const deleteTransaction = asyncErrorHandler(async (req, resp, next) => {
+    const transaction = await transactionService.deleteTransaction(req.params);
+    await sendResponse(resp, 204, {id: transaction.id});
+});
 
 module.exports = {
     findAllTransactions, createTransaction, findTransactionById, updateTransaction, deleteTransaction

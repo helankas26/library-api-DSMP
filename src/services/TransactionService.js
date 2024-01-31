@@ -8,9 +8,9 @@ const findAllTransactions = async () => {
     }
 }
 
-const createTransaction = async (reqBody) => {
+const createTransaction = async (req) => {
     try {
-        return await transactionRepository.createTransaction(reqBody);
+        return await transactionRepository.createTransaction(req);
     } catch (error) {
         throw error;
     }
@@ -24,9 +24,9 @@ const findTransactionById = async (reqParams) => {
     }
 }
 
-const updateTransaction = async (reqParams, reqBody) => {
+const updateTransaction = async (reqParams, req) => {
     try {
-        return await transactionRepository.updateTransaction(reqParams, reqBody);
+        return await transactionRepository.updateTransaction(reqParams, req);
     } catch (error) {
         throw error;
     }

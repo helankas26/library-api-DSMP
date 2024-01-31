@@ -9,12 +9,14 @@ const findAllTransactions = async () => {
     }
 }
 
-const createTransaction = async (transactionData) => {
+const createTransaction = async (req) => {
     try {
+        const transactionData = req.body;
+
         const transaction = new Transaction({
             books: transactionData.books,
             member: transactionData.member,
-            librarian: transactionData.user.profile,
+            librarian: req.user.profile,
             dueAt: await (async () => {
                 const config = await Config.findOne();
                 return new Date(Date.now() + config.borrowableDate.count * 24 * 60 * 60 * 1000);
@@ -35,9 +37,19 @@ const findTransactionById = async (params) => {
     }
 }
 
-const updateTransaction = async (params, transactionData) => {
+const updateTransaction = async (params, req) => {
     try {
-        return await Transaction.findByIdAndUpdate(params.id, transactionData, {new: true});
+        const transactionData = req.body;
+
+        return await Transaction.findByIdAndUpdate(params.id, {
+                $set: {
+                    books: transactionData.books,
+                    status: transactionData.status,
+                    librarian: req.user.profile,
+                    returnedAt: transactionData.returnedAt ? transactionData.returnedAt : undefined
+                }
+            }, {new: true, runValidators: true}
+        );
     } catch (error) {
         throw error;
     }
