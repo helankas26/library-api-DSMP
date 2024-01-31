@@ -1,84 +1,32 @@
 const authorService = require('../services/AuthorService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllAuthors = (req, resp) => {
-    authorService.findAllAuthors().then(authors => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                authors,
-                count: authors.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createAuthor = (req, resp) => {
-    authorService.createAuthor(req.body).then(author => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                author
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findAuthorById = (req, resp) => {
-    authorService.findAuthorById(req.params).then(author => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                author
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllAuthors = asyncErrorHandler(async (req, resp, next) => {
+    const authors = await authorService.findAllAuthors();
+    await sendResponse(resp, 200, {authors: authors, count: authors.length});
+});
 
-const updateAuthor = (req, resp) => {
-    authorService.updateAuthor(req.params, req.body).then(author => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                author
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createAuthor = asyncErrorHandler(async (req, resp, next) => {
+    const author = await authorService.createAuthor(req.body)
+    await sendResponse(resp, 201, {author});
+});
 
-const deleteAuthor = (req, resp) => {
-    authorService.deleteAuthor(req.params).then(author => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': author._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAuthorById = asyncErrorHandler(async (req, resp, next) => {
+    const author = await authorService.findAuthorById(req.params);
+    await sendResponse(resp, 200, {author});
+});
+
+const updateAuthor = asyncErrorHandler(async (req, resp, next) => {
+    const author = await authorService.updateAuthor(req.params, req.body);
+    await sendResponse(resp, 201, {author});
+});
+
+const deleteAuthor = asyncErrorHandler(async (req, resp, next) => {
+    const author = await authorService.deleteAuthor(req.params);
+    await sendResponse(resp, 204, {author});
+});
 
 module.exports = {
     findAllAuthors, createAuthor, findAuthorById, updateAuthor, deleteAuthor

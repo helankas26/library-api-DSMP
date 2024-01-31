@@ -30,7 +30,7 @@ const findAuthorById = async (params) => {
 
 const updateAuthor = async (params, authorData) => {
     try {
-        return await Author.findByIdAndUpdate(params.id, authorData, {new: true});
+        return await Author.findByIdAndUpdate(params.id, authorData, {new: true, runValidators: true});
     } catch (error) {
         throw error;
     }
