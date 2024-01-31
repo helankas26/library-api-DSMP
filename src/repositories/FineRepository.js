@@ -8,14 +8,16 @@ const findAllFines = async () => {
     }
 }
 
-const createFine = async (fineData) => {
+const createFine = async (req) => {
     try {
+        const fineData = req.body;
+
         const fine = new Fine({
             fee: fineData.fee,
             member: fineData.member,
             book: fineData.book,
             noOfDate: fineData.noOfDate,
-            librarian: fineData.user.profile
+            librarian: req.user.profile
         });
 
         return await fine.save();
@@ -32,9 +34,17 @@ const findFineById = async (params) => {
     }
 }
 
-const updateFine = async (params, fineData) => {
+const updateFine = async (params, req) => {
     try {
-        return await Fine.findByIdAndUpdate(params.id, fineData, {new: true});
+        const fineData = req.body;
+
+        return await Fine.findByIdAndUpdate(params.id, {
+                $set: {
+                    fee: fineData.fee,
+                    librarian: req.user.profile
+                }
+            }, {new: true, runValidators: true}
+        );
     } catch (error) {
         throw error;
     }

@@ -1,84 +1,32 @@
 const fineService = require('../services/FineService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllFines = (req, resp) => {
-    fineService.findAllFines().then(fines => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                fines,
-                count: fines.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createFine = (req, resp) => {
-    fineService.createFine(req.body).then(fine => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                fine
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findFineById = (req, resp) => {
-    fineService.findFineById(req.params).then(fine => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                fine
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllFines = asyncErrorHandler(async (req, resp, next) => {
+    const fines = await fineService.findAllFines();
+    await sendResponse(resp, 200, {fines: fines, count: fines.length});
+});
 
-const updateFine = (req, resp) => {
-    fineService.updateFine(req.params, req.body).then(fine => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                fine
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createFine = asyncErrorHandler(async (req, resp, next) => {
+    const fine = await fineService.createFine(req);
+    await sendResponse(resp, 201, {fine});
+});
 
-const deleteFine = (req, resp) => {
-    fineService.deleteFine(req.params).then(fine => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': fine._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findFineById = asyncErrorHandler(async (req, resp, next) => {
+    const fine = await fineService.findFineById(req.params);
+    await sendResponse(resp, 200, {fine});
+});
+
+const updateFine = asyncErrorHandler(async (req, resp, next) => {
+    const fine = await fineService.updateFine(req.params, req);
+    await sendResponse(resp, 201, {fine});
+});
+
+const deleteFine = asyncErrorHandler(async (req, resp, next) => {
+    const fine = await fineService.deleteFine(req.params);
+    await sendResponse(resp, 204, {id: fine.id});
+});
 
 module.exports = {
     findAllFines, createFine, findFineById, updateFine, deleteFine

@@ -8,9 +8,9 @@ const findAllFines = async () => {
     }
 }
 
-const createFine = async (reqBody) => {
+const createFine = async (req) => {
     try {
-        return await fineRepository.createFine(reqBody);
+        return await fineRepository.createFine(req);
     } catch (error) {
         throw error;
     }
@@ -24,9 +24,9 @@ const findFineById = async (reqParams) => {
     }
 }
 
-const updateFine = async (reqParams, reqBody) => {
+const updateFine = async (reqParams, req) => {
     try {
-        return await fineRepository.updateFine(reqParams, reqBody);
+        return await fineRepository.updateFine(reqParams, req);
     } catch (error) {
         throw error;
     }
