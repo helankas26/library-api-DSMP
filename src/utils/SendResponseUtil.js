@@ -12,7 +12,7 @@ const sendResponseWithToken = async (res, statusCode, user) => {
     if (NODE_ENV === 'production')
         options.secure = true
 
-    res.cookie('jwt', token, options);
+    res.cookie('token', token, options);
 
     user.password = undefined;
 
