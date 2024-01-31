@@ -1,24 +1,33 @@
-const {signToken} = require("./SignTokenGenerateUtil");
-const {LOGIN_EXPIRES, NODE_ENV} = require('../../config/serverConfig');
+const {getAccessToken, getRefreshToken} = require("./TokenGenerateUtil");
+const {ACCESS_TOKEN_EXPIRES, REFRESH_TOKEN_EXPIRES, NODE_ENV} = require('../../config/serverConfig');
 
 const sendResponseWithToken = async (res, statusCode, user) => {
-    const token = await signToken(user._id);
+    const accessToken = await getAccessToken(user.id);
+    const refreshToken = await getRefreshToken(user.id);
 
-    const options = {
-        maxAge: LOGIN_EXPIRES,
+    const accessTokenOptions = {
+        maxAge: ACCESS_TOKEN_EXPIRES,
         httpOnly: true
     };
 
-    if (NODE_ENV === 'production')
-        options.secure = true
+    const refreshTokenOptions = {
+        maxAge: REFRESH_TOKEN_EXPIRES,
+        httpOnly: true
+    };
 
-    res.cookie('token', token, options);
+    if (NODE_ENV === 'production') {
+        accessTokenOptions.secure = true;
+        refreshTokenOptions.secure = true;
+    }
+
+    res.cookie('accessToken', accessToken, accessTokenOptions);
+    res.cookie('refreshToken', refreshToken, refreshTokenOptions);
 
     user.password = undefined;
 
     res.status(statusCode).json({
         status: 'success',
-        token: token,
+        token: accessToken,
         data: {
             user
         }

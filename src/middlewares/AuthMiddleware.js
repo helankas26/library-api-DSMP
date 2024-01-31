@@ -5,7 +5,7 @@ const asyncErrorHandler = require("../utils/AsyncErrorHandler");
 const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 const PermissionDeniedError = require("../errors/PermissionDeniedError");
 const userService = require("../services/UserService");
-const {sendResponse} = require("../utils/SendResponseUtil");
+
 
 const verifyToken = asyncErrorHandler(async (req, res, next) => {
     // 1. Read the token & check if it exists

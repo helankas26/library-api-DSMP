@@ -4,6 +4,11 @@ const CredentialsNotFoundError = require("../errors/CredentialsNotFoundError");
 const {sendResponseWithToken, sendResponse} = require("../utils/SendResponseUtil");
 
 
+const refresh = asyncErrorHandler(async (req, resp, next) => {
+    const user = await authService.refreshToken(req);
+    await sendResponseWithToken(resp, 201, user);
+});
+
 const signup = asyncErrorHandler(async (req, resp, next) => {
     const user = await authService.createUser(req.body);
     await sendResponseWithToken(resp, 201, user);
@@ -16,6 +21,14 @@ const login = asyncErrorHandler(async (req, resp, next) => {
 
     const user = await authService.loginUser(username, password);
     await sendResponseWithToken(resp, 201, user);
+});
+
+const logout = asyncErrorHandler(async (req, resp, next) => {
+    const cookies = req.cookies
+    if (!cookies?.refreshToken || !cookies?.accessToken) return await sendResponse(resp, 204);
+    resp.clearCookie('refreshToken');
+    resp.clearCookie('accessToken');
+    await sendResponse(resp, 200);
 });
 
 const forgetPassword = asyncErrorHandler(async (req, resp, next) => {
@@ -31,5 +44,5 @@ const resetPassword = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    signup, login, forgetPassword, resetPassword
+    refresh, signup, login, logout, forgetPassword, resetPassword
 }

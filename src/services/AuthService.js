@@ -1,11 +1,41 @@
 const crypto = require('crypto');
+const util = require("util");
+const jwt = require("jsonwebtoken");
 
 const authRepository = require('../repositories/AuthRepository');
 const passwordHash = require("../utils/PasswordHashUtil");
 const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 const {sendEmail} = require('../utils/EmailSenderUtil');
 const PasswordDoesNotMatchError = require("../errors/PasswordDoesNotMatchError");
+const userService = require("./UserService");
 
+
+const refreshToken = async (req) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            throw new UnauthorizedAccessError('Refresh token does not exists!');
+        }
+
+        const decodedToken = await util.promisify(jwt.verify)(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY);
+
+        const user = await userService.findUserById(decodedToken);
+
+        if (!user) {
+            throw new UnauthorizedAccessError('The user with the given refresh token does not exist');
+        }
+
+        const isPasswordChanged = await user.isPasswordChanged(decodedToken.iat);
+        if (isPasswordChanged) {
+            throw new UnauthorizedAccessError('The password has been changed recently. Please login again');
+        }
+
+        return user;
+    } catch (error) {
+        throw error;
+    }
+}
 
 const createUser = async (reqBody) => {
     try {
@@ -81,5 +111,5 @@ const resetUserPassword = async (reqBody) => {
 }
 
 module.exports = {
-    createUser, loginUser, forgetUserPassword, resetUserPassword
+    refreshToken, createUser, loginUser, forgetUserPassword, resetUserPassword
 }
