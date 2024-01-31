@@ -15,8 +15,7 @@ const verifyToken = asyncErrorHandler(async (req, res, next) => {
     }
 
     if (!token) {
-        const error = new UnauthorizedAccessError('Token does not exists!');
-        next(error)
+        throw new UnauthorizedAccessError('Token does not exists!');
     }
 
     // 2. Validate the token
@@ -26,8 +25,7 @@ const verifyToken = asyncErrorHandler(async (req, res, next) => {
     const user = await userService.findUserById(decodedToken);
 
     if (!user) {
-        const error = new UnauthorizedAccessError('The user with the given token does not exist');
-        next(error)
+        throw new UnauthorizedAccessError('The user with the given token does not exist');
     }
 
     // 4. If the user change password after the token was issued
