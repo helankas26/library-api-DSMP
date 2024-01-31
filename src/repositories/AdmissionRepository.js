@@ -9,15 +9,17 @@ const findAllAdmissions = async () => {
     }
 }
 
-const createAdmission = async (admissionData) => {
+const createAdmission = async (req) => {
     try {
+        const admissionData = req.body;
+
         const admission = new Admission({
             fee: admissionData.fee ? admissionData.fee : await (async () => {
                 const config = await Config.findOne();
                 return config.admission.fee;
             })(),
             member: admissionData.member,
-            librarian: admissionData.user.profile
+            librarian: req.user.profile
         });
 
         return await admission.save();
@@ -34,9 +36,17 @@ const findAdmissionById = async (params) => {
     }
 }
 
-const updateAdmission = async (params, admissionData) => {
+const updateAdmission = async (params, req) => {
     try {
-        return await Admission.findByIdAndUpdate(params.id, admissionData, {new: true});
+        const admissionData = req.body;
+
+        return await Admission.findByIdAndUpdate(params.id, {
+                $set: {
+                    fee: admissionData.fee,
+                    librarian: req.user.profile
+                }
+            }, {new: true, runValidators: true}
+        );
     } catch (error) {
         throw error;
     }

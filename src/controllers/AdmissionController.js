@@ -1,84 +1,33 @@
 const admissionService = require('../services/AdmissionService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllAdmissions = (req, resp) => {
-    admissionService.findAllAdmissions().then(admissions => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                admissions,
-                count: admissions.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createAdmission = (req, resp) => {
-    admissionService.createAdmission(req.body).then(admission => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                admission
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findAdmissionById = (req, resp) => {
-    admissionService.findAdmissionById(req.params).then(admission => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                admission
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllAdmissions = asyncErrorHandler(async (req, resp, next) => {
+    const admissions = await admissionService.findAllAdmissions();
+    await sendResponse(resp, 200, {admissions: admissions, count: admissions.length});
+});
 
-const updateAdmission = (req, resp) => {
-    admissionService.updateAdmission(req.params, req.body).then(admission => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                admission
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createAdmission = asyncErrorHandler(async (req, resp, next) => {
+    const admission = await admissionService.createAdmission(req);
+    await sendResponse(resp, 201, {admission});
+});
 
-const deleteAdmission = (req, resp) => {
-    admissionService.deleteAdmission(req.params).then(admission => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': admission._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAdmissionById = asyncErrorHandler(async (req, resp, next) => {
+    const admission = await admissionService.findAdmissionById(req.params);
+    await sendResponse(resp, 200, {admission});
+
+});
+
+const updateAdmission = asyncErrorHandler(async (req, resp, next) => {
+    const admission = await admissionService.updateAdmission(req.params, req)
+    await sendResponse(resp, 201, {admission});
+});
+
+const deleteAdmission = asyncErrorHandler(async (req, resp, next) => {
+    const admission = await admissionService.deleteAdmission(req.params);
+    await sendResponse(resp, 204, {id: admission.id});
+});
 
 module.exports = {
     findAllAdmissions, createAdmission, findAdmissionById, updateAdmission, deleteAdmission

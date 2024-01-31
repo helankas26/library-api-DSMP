@@ -8,9 +8,9 @@ const findAllAdmissions = async () => {
     }
 }
 
-const createAdmission = async (reqBody) => {
+const createAdmission = async (req) => {
     try {
-        return await admissionRepository.createAdmission(reqBody);
+        return await admissionRepository.createAdmission(req);
     } catch (error) {
         throw error;
     }
@@ -24,9 +24,9 @@ const findAdmissionById = async (reqParams) => {
     }
 }
 
-const updateAdmission = async (reqParams, reqBody) => {
+const updateAdmission = async (reqParams, req) => {
     try {
-        return await admissionRepository.updateAdmission(reqParams, reqBody);
+        return await admissionRepository.updateAdmission(reqParams, req);
     } catch (error) {
         throw error;
     }

@@ -2,6 +2,7 @@ const express = require('express');
 
 const admissionController = require('../../controllers/AdmissionController');
 const paramMiddleware = require('../../middlewares/ParamMiddleware');
+const authMiddleware = require('../../middlewares/AuthMiddleware');
 const Admission = require('../../models/AdmissionSchema')
 
 const router = express.Router();
@@ -11,12 +12,12 @@ router.param('id', async (req, res, next, value) => {
 });
 
 router.route('/')
-    .get(admissionController.findAllAdmissions)
-    .post(admissionController.createAdmission);
+    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.findAllAdmissions)
+    .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.createAdmission);
 
 router.route('/:id')
-    .get(admissionController.findAdmissionById)
-    .patch(admissionController.updateAdmission)
-    .delete(admissionController.deleteAdmission);
+    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.findAdmissionById)
+    .patch(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.updateAdmission)
+    .delete(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), admissionController.deleteAdmission);
 
 module.exports = router;
