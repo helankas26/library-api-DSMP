@@ -1,84 +1,32 @@
 const bookService = require('../services/BookService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllBooks = (req, resp) => {
-    bookService.findAllBooks().then(books => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                books,
-                count: books.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createBook = (req, resp) => {
-    bookService.createBook(req.body).then(book => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                book
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findBookById = (req, resp) => {
-    bookService.findBookById(req.params).then(book => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                book
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllBooks = asyncErrorHandler(async (req, resp, next) => {
+    const books = await bookService.findAllBooks();
+    await sendResponse(resp, 201, {books: books, count: books.length});
+});
 
-const updateBook = (req, resp) => {
-    bookService.updateBook(req.params, req.body).then(book => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                book
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createBook = asyncErrorHandler(async (req, resp, next) => {
+    const book = await bookService.createBook(req.body);
+    await sendResponse(resp, 201, {book});
+});
 
-const deleteBook = (req, resp) => {
-    bookService.deleteBook(req.params).then(book => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': book._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findBookById = asyncErrorHandler(async (req, resp, next) => {
+    const book = await bookService.findBookById(req.params);
+    await sendResponse(resp, 200, {book});
+});
+
+const updateBook = asyncErrorHandler(async (req, resp, next) => {
+    const book = await bookService.updateBook(req.params, req.body);
+    await sendResponse(resp, 201, {book});
+});
+
+const deleteBook = asyncErrorHandler(async (req, resp, next) => {
+    const book = await bookService.deleteBook(req.params);
+    await sendResponse(resp, 204, {id: book.id});
+});
 
 module.exports = {
     findAllBooks, createBook, findBookById, updateBook, deleteBook

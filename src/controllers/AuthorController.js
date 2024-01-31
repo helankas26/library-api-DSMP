@@ -25,7 +25,7 @@ const updateAuthor = asyncErrorHandler(async (req, resp, next) => {
 
 const deleteAuthor = asyncErrorHandler(async (req, resp, next) => {
     const author = await authorService.deleteAuthor(req.params);
-    await sendResponse(resp, 204, {author});
+    await sendResponse(resp, 204, {id: author.id});
 });
 
 module.exports = {

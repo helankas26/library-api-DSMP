@@ -35,7 +35,7 @@ const findBookById = async (params) => {
 
 const updateBook = async (params, bookData) => {
     try {
-        return await Book.findByIdAndUpdate(params.id, bookData, {new: true});
+        return await Book.findByIdAndUpdate(params.id, bookData, {new: true, runValidators: true});
     } catch (error) {
         throw error;
     }
