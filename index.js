@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const sanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 // const bodyParser = require('body-parser');
 
 dotenv.config();
@@ -54,6 +55,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 */
 app.use(express.json({limit: '10kb'}));
+app.use(cookieParser());
 app.use(sanitize());
 app.use(xss());
 app.use(hpp());
