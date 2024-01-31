@@ -31,7 +31,7 @@ const findCategoryById = async (params) => {
 
 const updateCategory = async (params, categoryData) => {
     try {
-        return await Category.findByIdAndUpdate(params.id, categoryData, {new: true});
+        return await Category.findByIdAndUpdate(params.id, categoryData, {new: true, runValidators: true});
     } catch (error) {
         throw error;
     }

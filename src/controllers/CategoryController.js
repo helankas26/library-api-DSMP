@@ -1,84 +1,32 @@
 const categoryService = require('../services/CategoryService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllCategories = (req, resp) => {
-    categoryService.findAllCategories().then(categories => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                categories,
-                count: categories.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createCategory = (req, resp) => {
-    categoryService.createCategory(req.body).then(category => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                category
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findCategoryById = (req, resp) => {
-    categoryService.findCategoryById(req.params).then(category => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                category
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllCategories = asyncErrorHandler(async (req, resp, next) => {
+    const categories = await categoryService.findAllCategories();
+    await sendResponse(resp, 200, {categories: categories, count: categories.length});
+});
 
-const updateCategory = (req, resp) => {
-    categoryService.updateCategory(req.params, req.body).then(category => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                category
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createCategory = asyncErrorHandler(async (req, resp, next) => {
+    const category = await categoryService.createCategory(req.body);
+    await sendResponse(resp, 201, {category});
+});
 
-const deleteCategory = (req, resp) => {
-    categoryService.deleteCategory(req.params).then(category => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': category._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findCategoryById = asyncErrorHandler(async (req, resp, next) => {
+    const category = await categoryService.findCategoryById(req.params)
+    await sendResponse(resp, 200, {category});
+});
+
+const updateCategory = asyncErrorHandler(async (req, resp, next) => {
+    const category = await categoryService.updateCategory(req.params, req.body);
+    await sendResponse(resp, 201, {category});
+});
+
+const deleteCategory = asyncErrorHandler(async (req, resp, next) => {
+    const category = await categoryService.deleteCategory(req.params);
+    await sendResponse(resp, 204, {id: category.id});
+});
 
 module.exports = {
     findAllCategories, createCategory, findCategoryById, updateCategory, deleteCategory
