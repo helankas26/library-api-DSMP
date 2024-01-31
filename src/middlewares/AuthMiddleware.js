@@ -5,27 +5,34 @@ const asyncErrorHandler = require("../utils/AsyncErrorHandler");
 const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 const PermissionDeniedError = require("../errors/PermissionDeniedError");
 const userService = require("../services/UserService");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
 const verifyToken = asyncErrorHandler(async (req, res, next) => {
     // 1. Read the token & check if it exists
-    const testToken = req.headers.authorization;
+    /*const authHeader = req.headers.authorization || req.headers.Authorization;
     let token;
-    if (testToken && testToken.startsWith('Bearer')) {
-        token = testToken.split(' ')[1];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
     }
 
     if (!token) {
         throw new UnauthorizedAccessError('Token does not exists!');
+    }*/
+
+    const accessToken = req.cookies.accessToken;
+
+    if (!accessToken) {
+        throw new UnauthorizedAccessError('Access token does not exists!');
     }
 
     // 2. Validate the token
-    const decodedToken = await util.promisify(jwt.verify)(token, process.env.SECRET_KEY);
+    const decodedToken = await util.promisify(jwt.verify)(accessToken, process.env.ACCESS_TOKEN_SECRET_KEY);
 
     // 3. If the user exists
     const user = await userService.findUserById(decodedToken);
 
     if (!user) {
-        throw new UnauthorizedAccessError('The user with the given token does not exist');
+        throw new UnauthorizedAccessError('The user with the given access token does not exist');
     }
 
     // 4. If the user change password after the token was issued
