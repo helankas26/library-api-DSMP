@@ -1,84 +1,32 @@
 const profileService = require('../services/ProfileService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllProfiles = (req, resp) => {
-    profileService.findAllProfiles().then(profiles => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                profiles,
-                count: profiles.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createProfile = (req, resp) => {
-    profileService.createProfile(req.body).then(profile => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                profile
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findProfileById = (req, resp) => {
-    profileService.findProfileById(req.params).then(profile => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                profile
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllProfiles = asyncErrorHandler(async (req, resp, next) => {
+    const profiles = await profileService.findAllProfiles();
+    await sendResponse(resp, 200, {profiles: profiles, count: profiles.length});
+});
 
-const updateProfile = (req, resp) => {
-    profileService.updateProfile(req.params, req.body).then(profile => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                profile
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createProfile = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.createProfile(req.body);
+    await sendResponse(resp, 201, {profile});
+});
 
-const deleteProfile = (req, resp) => {
-    profileService.deleteProfile(req.params).then(profile => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': profile._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findProfileById = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.findProfileById(req.params);
+    await sendResponse(resp, 200, {profile});
+});
+
+const updateProfile = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.updateProfile(req.params, req.body);
+    await sendResponse(resp, 201, {profile});
+});
+
+const deleteProfile = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.deleteProfile(req.params);
+    await sendResponse(resp, 204, {id: profile.id});
+});
 
 module.exports = {
     findAllProfiles, createProfile, findProfileById, updateProfile, deleteProfile

@@ -37,7 +37,7 @@ const findProfileById = async (params) => {
 
 const updateProfile = async (params, profileData) => {
     try {
-        return await Profile.findByIdAndUpdate(params.id, profileData, {new: true});
+        return await Profile.findByIdAndUpdate(params.id, profileData, {new: true, runValidators: true});
     } catch (error) {
         throw error;
     }

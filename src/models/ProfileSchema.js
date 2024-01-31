@@ -19,7 +19,7 @@ const profileSchema = new Schema({
         type: String,
         unique: true,
         required: true,
-        lowercase: true,
+        lowercase: true
     },
     telNo: {
         type: String,
@@ -33,7 +33,7 @@ const profileSchema = new Schema({
         type: String,
         enum: ['LIBRARIAN', 'MEMBER'],
         required: true,
-        default: "MEMBER",
+        default: "MEMBER"
     },
     paymentStatus: {
         type: Number
@@ -48,7 +48,7 @@ const profileSchema = new Schema({
                 const config = await Config.findOne();
                 return value >= 0 && value <= config.noOfReservation.count;
             }
-        },
+        }
     },
     borrowCount: {
         type: Number,
@@ -60,19 +60,19 @@ const profileSchema = new Schema({
                 const config = await Config.findOne();
                 return value >= 0 && value <= config.noOfBorrow.count;
             }
-        },
+        }
     },
     createdAt: {
         type: Date,
         required: true,
         default: () => Date.now(),
-        immutable: true,
-    },
+        immutable: true
+    }
 });
 
 profileSchema.pre('save', function (next) {
     if (this.type === 'MEMBER') {
-        this.paymentStatus = 1
+        this.paymentStatus = 1;
     }
 
     next();
