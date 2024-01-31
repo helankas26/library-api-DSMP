@@ -26,7 +26,8 @@ const subscriptionSchema = new Schema({
                 const user = await Profile.findOne({_id: value, type: 'MEMBER'});
                 return !!user;
             }
-        }
+        },
+        immutable: true
     },
     librarian: {
         type: String,

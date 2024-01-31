@@ -1,84 +1,32 @@
 const subscriptionService = require('../services/SubscriptionService');
+const asyncErrorHandler = require("../utils/AsyncErrorHandler");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
-const findAllSubscriptions = (req, resp) => {
-    subscriptionService.findAllSubscriptions().then(subscriptions => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                subscriptions,
-                count: subscriptions.length
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
-const createSubscription = (req, resp) => {
-    subscriptionService.createSubscription(req.body).then(subscription => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                subscription
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
 
-const findSubscriptionById = (req, resp) => {
-    subscriptionService.findSubscriptionById(req.params).then(subscription => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                subscription
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findAllSubscriptions = asyncErrorHandler(async (req, resp, next) => {
+    const subscriptions = await subscriptionService.findAllSubscriptions();
+    await sendResponse(resp, 200, {subscriptions: subscriptions, count: subscriptions.length});
+});
 
-const updateSubscription = (req, resp) => {
-    subscriptionService.updateSubscription(req.params, req.body).then(subscription => {
-        resp.status(201).json({
-            'status': 'success',
-            'data': {
-                subscription
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const createSubscription = asyncErrorHandler(async (req, resp, next) => {
+    const subscription = await subscriptionService.createSubscription(req);
+    await sendResponse(resp, 201, {subscription});
+});
 
-const deleteSubscription = (req, resp) => {
-    subscriptionService.deleteSubscription(req.params).then(subscription => {
-        resp.status(200).json({
-            'status': 'success',
-            'data': {
-                'id': subscription._id
-            }
-        });
-    }).catch(err => {
-        return resp.status(500).json({
-            'status': 'error',
-            'message': err.message
-        });
-    });
-}
+const findSubscriptionById = asyncErrorHandler(async (req, resp, next) => {
+    const subscription = await subscriptionService.findSubscriptionById(req.params);
+    await sendResponse(resp, 200, {subscription});
+});
+
+const updateSubscription = asyncErrorHandler(async (req, resp, next) => {
+    const subscription = await subscriptionService.updateSubscription(req.params, req);
+    await sendResponse(resp, 201, {subscription});
+});
+
+const deleteSubscription = asyncErrorHandler(async (req, resp, next) => {
+    const subscription = await subscriptionService.deleteSubscription(req.params);
+    await sendResponse(resp, 204, {id: subscription.id});
+});
 
 module.exports = {
     findAllSubscriptions, createSubscription, findSubscriptionById, updateSubscription, deleteSubscription

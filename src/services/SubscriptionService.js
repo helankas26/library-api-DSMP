@@ -8,9 +8,9 @@ const findAllSubscriptions = async () => {
     }
 }
 
-const createSubscription = async (reqBody) => {
+const createSubscription = async (req) => {
     try {
-        return await subscriptionRepository.createSubscription(reqBody);
+        return await subscriptionRepository.createSubscription(req);
     } catch (error) {
         throw error;
     }
@@ -24,9 +24,9 @@ const findSubscriptionById = async (reqParams) => {
     }
 }
 
-const updateSubscription = async (reqParams, reqBody) => {
+const updateSubscription = async (reqParams, req) => {
     try {
-        return await subscriptionRepository.updateSubscription(reqParams, reqBody);
+        return await subscriptionRepository.updateSubscription(reqParams, req);
     } catch (error) {
         throw error;
     }

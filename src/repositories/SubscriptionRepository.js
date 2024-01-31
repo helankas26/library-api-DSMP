@@ -10,8 +10,10 @@ const findAllSubscriptions = async () => {
     }
 }
 
-const createSubscription = async (subscriptionData) => {
+const createSubscription = async (req) => {
     try {
+        const subscriptionData = req.body;
+
         const subscription = new Subscription({
             fee: subscriptionData.fee ? subscriptionData.fee : await (async () => {
                 const config = await Config.findOne();
@@ -29,7 +31,7 @@ const createSubscription = async (subscriptionData) => {
                 return paidFor.toLocaleString('en-US', options);
             })(),
             member: subscriptionData.member,
-            librarian: subscriptionData.user.profile
+            librarian: req.user.profile
         });
 
         return await subscription.save();
@@ -46,9 +48,19 @@ const findSubscriptionById = async (params) => {
     }
 }
 
-const updateSubscription = async (params, subscriptionData) => {
+const updateSubscription = async (params, req) => {
     try {
-        return await Subscription.findByIdAndUpdate(params.id, subscriptionData, {new: true});
+        const subscriptionData = req.body;
+
+        return await Subscription.findByIdAndUpdate(params.id, {
+                $set: {
+                    fee: subscriptionData.fee,
+                    paidFor: subscriptionData.paidFor,
+                    librarian: req.user.profile,
+                    updateAt: Date.now()
+                }
+            }, {new: true, runValidators: true}
+        );
     } catch (error) {
         throw error;
     }
