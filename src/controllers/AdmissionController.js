@@ -16,7 +16,6 @@ const createAdmission = asyncErrorHandler(async (req, resp, next) => {
 const findAdmissionById = asyncErrorHandler(async (req, resp, next) => {
     const admission = await admissionService.findAdmissionById(req.params);
     await sendResponse(resp, 200, {admission});
-
 });
 
 const updateAdmission = asyncErrorHandler(async (req, resp, next) => {

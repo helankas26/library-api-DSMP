@@ -13,12 +13,7 @@ router.param('id', async (req, res, next, value) => {
 
 router.route('/').get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), userController.findAllUsers)
 
-router.route('/signup').post(userController.signup);
-router.route('/login').post(userController.login);
-router.route('/forgetPassword').post(userController.forgetPassword);
-
 router.route('/').patch(authMiddleware.verifyToken, userController.updateUser);
-router.route('/resetPassword').patch(userController.resetPassword);
 router.route('/changePassword').patch(authMiddleware.verifyToken, userController.changePassword);
 
 router.route('/:id')

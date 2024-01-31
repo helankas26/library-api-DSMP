@@ -17,6 +17,7 @@ const NotFoundError = require("./src/errors/NotFoundError");
 
 //----------------------- Routes import
 const configRoute = require('./src/routes/api/ConfigRoute');
+const authRoute = require('./src/routes/api/AuthRoute');
 const profileRoute = require('./src/routes/api/ProfileRoute');
 const userRoute = require('./src/routes/api/UserRoute');
 const categoryRoute = require('./src/routes/api/CategoryRoute');
@@ -78,6 +79,7 @@ process.on('unhandledRejection', (err) => {
 
 //----------------------- Routes
 app.use('/api/v1/configs', configRoute);
+app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/profiles', profileRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/categories', categoryRoute);
