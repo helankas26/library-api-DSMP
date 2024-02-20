@@ -28,16 +28,14 @@ const sendResponseWithToken = async (res, statusCode, user) => {
     res.status(statusCode).json({
         status: 'success',
         token: accessToken,
-        data: {
-            user
-        }
+        user
     });
 }
 
 const sendResponse = async (res, statusCode, data) => {
     res.status(statusCode).json({
         status: 'success',
-        data
+        ...data
     });
 }
 
