@@ -4,7 +4,7 @@ const CredentialsNotFoundError = require("../errors/CredentialsNotFoundError");
 const {sendResponseWithToken, sendResponse} = require("../utils/SendResponseUtil");
 
 
-const refresh = asyncErrorHandler(async (req, resp, next) => {
+const refreshToken = asyncErrorHandler(async (req, resp, next) => {
     const user = await authService.refreshToken(req);
     await sendResponseWithToken(resp, 201, user);
 });
@@ -44,5 +44,5 @@ const resetPassword = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    refresh, signup, login, logout, forgetPassword, resetPassword
+    refreshToken, signup, login, logout, forgetPassword, resetPassword
 }
