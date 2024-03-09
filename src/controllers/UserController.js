@@ -1,6 +1,7 @@
 const userService = require('../services/UserService');
 const asyncErrorHandler = require("../utils/AsyncErrorHandler");
 const {sendResponseWithToken, sendResponse} = require("../utils/SendResponseUtil");
+const BadRequestError = require("../errors/BadRequestError");
 
 
 const findAllUsers = asyncErrorHandler(async (req, resp, next) => {
@@ -15,8 +16,7 @@ const findUserById = asyncErrorHandler(async (req, resp, next) => {
 
 const updateUser = asyncErrorHandler(async (req, resp, next) => {
     if (req.body.password || req.body.confirmPassword) {
-        const error = new Error('You cannot update password');
-        error.statusCode = 400;
+        const error = new BadRequestError('You cannot update password');
         return next(error);
     }
 

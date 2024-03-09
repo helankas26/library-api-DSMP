@@ -3,6 +3,7 @@ const passwordHash = require("../utils/PasswordHashUtil");
 const UserAlreadyExistsError = require("../errors/UserAlreadyExistsError");
 const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 const NotFoundError = require("../errors/NotFoundError");
+const BadRequestError = require("../errors/BadRequestError");
 
 
 const createUser = async (userData) => {
@@ -22,6 +23,14 @@ const createUser = async (userData) => {
         });
 
         return await user.save();
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findUserByProfile = async (regNo) => {
+    try {
+        return await User.findByProfile(regNo);
     } catch (error) {
         throw error;
     }
@@ -51,14 +60,20 @@ const forgetUserPassword = async (email) => {
     }
 }
 
+const findUserByOtp = async (otp) => {
+    try {
+        return await User.findByOtp(otp);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const resetUserPassword = async (userData) => {
     try {
-        const user = await User.findByOtp(userData.otp);
+        const user = await User.findByOtpWithExpires(userData.otp);
 
         if (!user) {
-            const error = new Error('Token is invalid or has expired');
-            error.statusCode = 400;
-            throw error;
+            throw new BadRequestError('OTP is invalid or has expired');
         }
 
         user.password = await passwordHash.hashPassword(userData.password);
@@ -75,6 +90,5 @@ const resetUserPassword = async (userData) => {
 }
 
 module.exports = {
-    createUser, loginUser, forgetUserPassword, resetUserPassword,
-
+    createUser, findUserByProfile, loginUser, forgetUserPassword, findUserByOtp, resetUserPassword,
 }

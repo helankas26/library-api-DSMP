@@ -8,6 +8,9 @@ const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 const {sendEmail} = require('../utils/EmailSenderUtil');
 const PasswordDoesNotMatchError = require("../errors/PasswordDoesNotMatchError");
 const userService = require("./UserService");
+const profileService = require("./ProfileService");
+const UserAlreadyExistsError = require("../errors/UserAlreadyExistsError");
+const BadRequestError = require("../errors/BadRequestError");
 
 
 const refreshToken = async (req) => {
@@ -32,6 +35,20 @@ const refreshToken = async (req) => {
         }
 
         return user;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const checkRegistrationValid = async (regNo) => {
+    try {
+        const user = await authRepository.findUserByProfile(regNo);
+
+        if (user) throw new UserAlreadyExistsError('User with this Registration No. already exists');
+
+        const profile = await profileService.findProfileById({id: regNo});
+
+        return profile !== null;
     } catch (error) {
         throw error;
     }
@@ -96,6 +113,22 @@ const forgetUserPassword = async (email) => {
     }
 }
 
+const checkOtpValid = async (otp) => {
+    try {
+        otp = crypto.createHash('sha256').update(otp).digest('hex');
+
+        const user = await authRepository.findUserByOtp(otp);
+
+        if (user && user.otpExpires < Date.now()) {
+            throw new BadRequestError('OTP has expired');
+        }
+
+        return user !== null;
+    } catch (error) {
+        throw error;
+    }
+}
+
 const resetUserPassword = async (reqBody) => {
     try {
         if (reqBody.password !== reqBody.confirmPassword) throw new PasswordDoesNotMatchError('Password does not match!');
@@ -111,5 +144,5 @@ const resetUserPassword = async (reqBody) => {
 }
 
 module.exports = {
-    refreshToken, createUser, loginUser, forgetUserPassword, resetUserPassword
+    refreshToken, checkRegistrationValid, createUser, loginUser, forgetUserPassword, checkOtpValid, resetUserPassword
 }

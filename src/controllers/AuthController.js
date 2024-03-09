@@ -4,9 +4,16 @@ const CredentialsNotFoundError = require("../errors/CredentialsNotFoundError");
 const {sendResponseWithToken, sendResponse} = require("../utils/SendResponseUtil");
 
 
-const refresh = asyncErrorHandler(async (req, resp, next) => {
+const refreshToken = asyncErrorHandler(async (req, resp, next) => {
     const user = await authService.refreshToken(req);
     await sendResponseWithToken(resp, 201, user);
+});
+
+const checkRegistrationValid = asyncErrorHandler(async (req, resp, next) => {
+    const {regNo} = req.body;
+
+    const isValid = await authService.checkRegistrationValid(regNo);
+    await sendResponse(resp, 200, {valid: isValid});
 });
 
 const signup = asyncErrorHandler(async (req, resp, next) => {
@@ -38,11 +45,19 @@ const forgetPassword = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {send: isEmailSend});
 });
 
+const checkOtpValid = asyncErrorHandler(async (req, resp, next) => {
+    const {otp} = req.body;
+
+    const isValid = await authService.checkOtpValid(otp);
+    await sendResponse(resp, 200, {valid: isValid});
+});
+
+
 const resetPassword = asyncErrorHandler(async (req, resp, next) => {
     const user = await authService.resetUserPassword(req.body);
     await sendResponseWithToken(resp, 201, user);
 });
 
 module.exports = {
-    refresh, signup, login, logout, forgetPassword, resetPassword
+    refreshToken, checkRegistrationValid, signup, login, logout, forgetPassword, checkOtpValid, resetPassword
 }

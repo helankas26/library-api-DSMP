@@ -65,6 +65,10 @@ userSchema.statics.findByUsernameOrProfile = function (username, profile) {
     });
 };
 
+userSchema.statics.findByProfile = async function (profile) {
+    return await this.findOne({profile: profile});
+};
+
 userSchema.statics.findByUsername = async function (username) {
     return await this.findOne({username: username}).select('+password');
 };
@@ -76,6 +80,10 @@ userSchema.statics.findByEmail = async function (email) {
 
 userSchema.statics.findByOtp = async function (otp) {
     return await this.findOne({otp: otp, otpExpires: {$gt: Date.now()}}).select('+password');
+};
+
+userSchema.statics.findByOtpWithExpires = async function (otp) {
+    return await this.findOne({otp: otp, otpExpires: {$gt: Date.now()}});
 };
 
 userSchema.methods.isPasswordChanged = async function (JWTTimestamp) {
