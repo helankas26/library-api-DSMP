@@ -8,9 +8,9 @@ const findAllReservations = async () => {
     }
 }
 
-const createReservation = async (reqBody) => {
+const createReservation = async (req) => {
     try {
-        return await reservationRepository.createReservation(reqBody);
+        return await reservationRepository.createReservation(req);
     } catch (error) {
         throw error;
     }

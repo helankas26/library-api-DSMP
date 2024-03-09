@@ -9,7 +9,7 @@ const findAllReservations = asyncErrorHandler(async (req, resp, next) => {
 });
 
 const createReservation = asyncErrorHandler(async (req, resp, next) => {
-    const reservation = await reservationService.createReservation(req.body);
+    const reservation = await reservationService.createReservation(req);
     await sendResponse(resp, 201, {reservation});
 });
 

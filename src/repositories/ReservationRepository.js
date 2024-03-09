@@ -8,11 +8,12 @@ const findAllReservations = async () => {
     }
 }
 
-const createReservation = async (reservationData) => {
+const createReservation = async (req) => {
     try {
+        const reservationData = req.body;
         const reservation = new Reservation({
             book: reservationData.book,
-            member: reservationData.user.profile
+            member: req.user.profile
         });
 
         return await reservation.save();

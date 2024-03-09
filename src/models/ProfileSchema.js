@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose');
 
-const getProfileModel = () => require('./ConfigSchema');
+const getConfigModel = () => require('./ConfigSchema');
 
 const profileSchema = new Schema({
     _id: {
@@ -44,9 +44,11 @@ const profileSchema = new Schema({
         default: 0,
         validate: {
             validator: async (value) => {
-                const Config = getProfileModel();
-                const config = await Config.findOne();
-                return value >= 0 && value <= config.noOfReservation.count;
+                if (this.type === 'MEMBER') {
+                    const Config = getConfigModel();
+                    const config = await Config.findOne();
+                    return value >= 0 && value <= config.noOfReservation.count;
+                }
             }
         }
     },
@@ -56,9 +58,11 @@ const profileSchema = new Schema({
         default: 0,
         validate: {
             validator: async (value) => {
-                const Config = getProfileModel();
-                const config = await Config.findOne();
-                return value >= 0 && value <= config.noOfBorrow.count;
+                if (this.type === 'MEMBER') {
+                    const Config = getConfigModel();
+                    const config = await Config.findOne();
+                    return value >= 0 && value <= config.noOfBorrow.count;
+                }
             }
         }
     },
@@ -73,6 +77,11 @@ const profileSchema = new Schema({
 profileSchema.pre('save', function (next) {
     if (this.type === 'MEMBER') {
         this.paymentStatus = 1;
+    }
+
+    if (this.type === 'LIBRARIAN') {
+        this.reservationCount = undefined;
+        this.borrowCount = undefined;
     }
 
     next();

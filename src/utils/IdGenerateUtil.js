@@ -1,7 +1,7 @@
 const generateId = async (createDate, collection) => {
     const year = createDate.getFullYear().toString();
     const month = (createDate.getMonth() + 1) < 10 ? "0" + (createDate.getMonth() + 1).toString() : (createDate.getMonth() + 1).toString();
-    const date = createDate.getDate().toString();
+    const date = createDate.getDate() < 10 ? "0" + createDate.getDate().toString() : createDate.getDate().toString();
     const prefix = year + month + date;
     createDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(date))
 
