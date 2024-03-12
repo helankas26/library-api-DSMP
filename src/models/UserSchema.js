@@ -79,7 +79,7 @@ userSchema.statics.findByEmail = async function (email) {
 };
 
 userSchema.statics.findByOtp = async function (otp) {
-    return await this.findOne({otp: otp, otpExpires: {$gt: Date.now()}}).select('+password');
+    return await this.findOne({otp: otp}).select('+otpExpires');
 };
 
 userSchema.statics.findByOtpWithExpires = async function (otp) {
