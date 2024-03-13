@@ -2,8 +2,8 @@ const {getAccessToken, getRefreshToken} = require("./TokenGenerateUtil");
 const {ACCESS_TOKEN_EXPIRES, REFRESH_TOKEN_EXPIRES, NODE_ENV} = require('../../config/serverConfig');
 
 const sendResponseWithToken = async (res, statusCode, user) => {
-    const accessToken = await getAccessToken(user.id);
-    const refreshToken = await getRefreshToken(user.id);
+    const accessToken = await getAccessToken(user);
+    const refreshToken = await getRefreshToken(user);
 
     const accessTokenOptions = {
         maxAge: ACCESS_TOKEN_EXPIRES,
@@ -27,7 +27,8 @@ const sendResponseWithToken = async (res, statusCode, user) => {
 
     res.status(statusCode).json({
         status: 'success',
-        token: accessToken,
+        accessToken,
+        refreshToken,
         user
     });
 }
