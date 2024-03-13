@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 
 dotenv.config();
 
-const {PORT} = require('./config/serverConfig');
+const {PORT, HOSTNAME} = require('./config/serverConfig');
 const globalErrorHandler = require('./src/middlewares/GlobalErrorHandler');
 const NotFoundError = require("./src/errors/NotFoundError");
 
@@ -66,7 +66,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {
     console.log('Connected to MongoDB');
 })
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, HOSTNAME, () => {
     console.log(`server started & running on port ${PORT}`);
 });
 
