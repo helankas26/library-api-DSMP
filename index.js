@@ -81,7 +81,7 @@ process.on('unhandledRejection', (err) => {
 });
 
 //----------------------- Routes
-app.use('/api/v1/dashboardRoutes', dashboardRouteRoute);
+app.use('/api/v1/dashboard-routes', dashboardRouteRoute);
 app.use('/api/v1/configs', configRoute);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/profiles', profileRoute);
