@@ -17,6 +17,7 @@ const globalErrorHandler = require('./src/middlewares/GlobalErrorHandler');
 const NotFoundError = require("./src/errors/NotFoundError");
 
 //----------------------- Routes import
+const dashboardRouteRoute = require('./src/routes/api/DashboardRouteRoute');
 const configRoute = require('./src/routes/api/ConfigRoute');
 const authRoute = require('./src/routes/api/AuthRoute');
 const profileRoute = require('./src/routes/api/ProfileRoute');
@@ -80,6 +81,7 @@ process.on('unhandledRejection', (err) => {
 });
 
 //----------------------- Routes
+app.use('/api/v1/dashboardRoutes', dashboardRouteRoute);
 app.use('/api/v1/configs', configRoute);
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/profiles', profileRoute);
