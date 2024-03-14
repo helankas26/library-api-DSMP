@@ -85,8 +85,16 @@ DashboardRouteSchema.statics.findAllByAuthUser = async function (userRole) {
                 path: {$first: '$path'},
                 icon: {$first: '$icon'},
                 position: {$first: '$position'},
-                role: {$first: '$role'},
-                subRoutes: {$push: '$subRoutes'}
+                role: {$first: userRole},
+                subRoutes: {
+                    $push: {
+                        id: '$subRoutes._id',
+                        subRoute: '$subRoutes.subRoute',
+                        path: '$subRoutes.path',
+                        position: '$subRoutes.position',
+                        role: userRole
+                    }
+                }
             }
         }
     ]).sort({
