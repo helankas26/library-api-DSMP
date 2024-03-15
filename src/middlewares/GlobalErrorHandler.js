@@ -3,6 +3,7 @@ const CastError = require("../errors/CastError");
 const DuplicateKeyError = require("../errors/DuplicateKeyError");
 const ValidationErrorHandler = require("../errors/ValidationErrorHandler");
 const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
+const ForbiddenRequestError = require("../errors/ForbiddenRequestError");
 
 const devErrors = (err, res) => {
     return res.status(err.statusCode).json({
@@ -29,7 +30,7 @@ const validationErrorHandler = (err) => {
 }
 
 const tokenExpiredErrorHandler = (err) => {
-    return new UnauthorizedAccessError('Token has expired. Please login again!');
+    return new ForbiddenRequestError('Token has expired!');
 }
 
 const jsonWebTokenErrorHandler = (err) => {
