@@ -8,22 +8,25 @@ const userService = require("../services/UserService");
 
 
 const verifyToken = asyncErrorHandler(async (req, res, next) => {
+
     // 1. Read the token & check if it exists
-    /*const authHeader = req.headers.authorization || req.headers.Authorization;
-    let token;
+    // Get accessToken via authorization headers
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    let accessToken;
     if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.split(' ')[1];
+        accessToken = authHeader.split(' ')[1];
     }
-
-    if (!token) {
-        throw new UnauthorizedAccessError('Token does not exists!');
-    }*/
-
-    const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
         throw new UnauthorizedAccessError('Access token does not exists!');
     }
+
+    // Get accessToken via cookies
+    /*const accessToken = req.cookies.accessToken;
+
+    if (!accessToken) {
+        throw new UnauthorizedAccessError('Access token does not exists!');
+    }*/
 
     // 2. Validate the token
     const decodedToken = await util.promisify(jwt.verify)(accessToken, process.env.ACCESS_TOKEN_SECRET_KEY);
