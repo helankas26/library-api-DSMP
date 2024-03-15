@@ -32,10 +32,10 @@ const login = asyncErrorHandler(async (req, resp, next) => {
 
 const logout = asyncErrorHandler(async (req, resp, next) => {
     const cookies = req.cookies
-    if (!cookies?.refreshToken || !cookies?.accessToken) return await sendResponse(resp, 204);
-    resp.clearCookie('refreshToken');
-    resp.clearCookie('accessToken');
-    await sendResponse(resp, 200);
+    if (!cookies?.refreshToken) return await sendResponse(resp, 204);
+
+    resp.clearCookie('refreshToken', {httpOnly: true, secure: true});
+    await sendResponse(resp, 204);
 });
 
 const forgetPassword = asyncErrorHandler(async (req, resp, next) => {

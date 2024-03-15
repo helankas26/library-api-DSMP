@@ -5,10 +5,10 @@ const sendResponseWithToken = async (res, statusCode, user) => {
     const accessToken = await getAccessToken(user);
     const refreshToken = await getRefreshToken(user);
 
-    const accessTokenOptions = {
-        maxAge: ACCESS_TOKEN_EXPIRES,
-        httpOnly: true
-    };
+    // const accessTokenOptions = {
+    //     maxAge: ACCESS_TOKEN_EXPIRES,
+    //     httpOnly: true
+    // };
 
     const refreshTokenOptions = {
         maxAge: REFRESH_TOKEN_EXPIRES,
@@ -16,11 +16,11 @@ const sendResponseWithToken = async (res, statusCode, user) => {
     };
 
     if (NODE_ENV === 'production') {
-        accessTokenOptions.secure = true;
+        // accessTokenOptions.secure = true;
         refreshTokenOptions.secure = true;
     }
 
-    res.cookie('accessToken', accessToken, accessTokenOptions);
+    // res.cookie('accessToken', accessToken, accessTokenOptions);
     res.cookie('refreshToken', refreshToken, refreshTokenOptions);
 
     user.password = undefined;
@@ -28,7 +28,6 @@ const sendResponseWithToken = async (res, statusCode, user) => {
     res.status(statusCode).json({
         status: 'success',
         accessToken,
-        refreshToken,
         user
     });
 }
