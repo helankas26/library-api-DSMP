@@ -1,5 +1,7 @@
 const userRepository = require('../repositories/UserRepository');
 const PasswordDoesNotMatchError = require("../errors/PasswordDoesNotMatchError");
+const tokenGenerate = require("../utils/TokenGenerateUtil");
+const crypto = require("crypto");
 
 
 const findAllUsers = async () => {
@@ -26,13 +28,22 @@ const updateUser = async (req) => {
     }
 }
 
-const changeUserPassword = async (req) => {
+const changeUserPassword = async (req, res) => {
     try {
         if (req.body.password !== req.body.confirmPassword) throw new PasswordDoesNotMatchError('Password does not match!');
 
-        const user = await userRepository.changeUserPassword(req);
+        let user = await userRepository.changeUserPassword(req);
 
-        return user;
+        const accessToken = await tokenGenerate.getAccessToken(user);
+        const refreshToken = await tokenGenerate.getRefreshToken(res, user);
+
+        user.refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+        user = await user.save();
+
+        user.password = undefined;
+        user.refreshToken = undefined;
+
+        return {user, accessToken};
     } catch (error) {
         throw error;
     }
