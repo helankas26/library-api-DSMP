@@ -1,6 +1,6 @@
 const userService = require('../services/UserService');
 const asyncErrorHandler = require("../utils/AsyncErrorHandler");
-const {sendResponseWithToken, sendResponse} = require("../utils/SendResponseUtil");
+const {sendResponse} = require("../utils/SendResponseUtil");
 const BadRequestError = require("../errors/BadRequestError");
 
 
@@ -25,8 +25,8 @@ const updateUser = asyncErrorHandler(async (req, resp, next) => {
 });
 
 const changePassword = asyncErrorHandler(async (req, resp, next) => {
-    const user = await userService.changeUserPassword(req);
-    await sendResponseWithToken(resp, 201, user);
+    const userWithToken = await userService.changeUserPassword(req, resp);
+    await sendResponse(resp, 201, userWithToken);
 });
 
 const deleteUser = asyncErrorHandler(async (req, resp, next) => {

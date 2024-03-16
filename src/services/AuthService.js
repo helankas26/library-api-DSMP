@@ -7,15 +7,15 @@ const passwordHash = require("../utils/PasswordHashUtil");
 const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 const {sendEmail} = require('../utils/EmailSenderUtil');
 const PasswordDoesNotMatchError = require("../errors/PasswordDoesNotMatchError");
-const userService = require("./UserService");
 const profileService = require("./ProfileService");
 const UserAlreadyExistsError = require("../errors/UserAlreadyExistsError");
 const BadRequestError = require("../errors/BadRequestError");
+const tokenGenerate = require("../utils/TokenGenerateUtil");
 
 
 const refreshToken = async (req) => {
     try {
-        const refreshToken = req.cookies.refreshToken;
+        let refreshToken = req.cookies.refreshToken;
 
         if (!refreshToken) {
             throw new UnauthorizedAccessError('Refresh token does not exists!');
@@ -23,7 +23,8 @@ const refreshToken = async (req) => {
 
         const decodedToken = await util.promisify(jwt.verify)(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY);
 
-        const user = await userService.findUserById(decodedToken);
+        refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+        const user = await authRepository.findUserByIdAndRefreshToken(decodedToken, refreshToken);
 
         if (!user) {
             throw new UnauthorizedAccessError('The user with the given refresh token does not exist');
@@ -34,7 +35,9 @@ const refreshToken = async (req) => {
             throw new UnauthorizedAccessError('The password has been changed recently. Please login again');
         }
 
-        return user;
+        const accessToken = await tokenGenerate.getAccessToken(user);
+
+        return {user, accessToken};
     } catch (error) {
         throw error;
     }
@@ -54,27 +57,64 @@ const checkRegistrationValid = async (regNo) => {
     }
 }
 
-const createUser = async (reqBody) => {
+const createUser = async (reqBody, res) => {
     try {
         if (reqBody.password !== reqBody.confirmPassword) throw new PasswordDoesNotMatchError('Password does not match!');
 
-        const user = await authRepository.createUser(reqBody);
+        let user = await authRepository.createUser(reqBody);
 
-        return user;
+        const accessToken = await tokenGenerate.getAccessToken(user);
+        const refreshToken = await tokenGenerate.getRefreshToken(res, user);
+
+        user.refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+        user = await user.save();
+
+        user.password = undefined;
+        user.refreshToken = undefined;
+
+        return {user, accessToken};
     } catch (error) {
         throw error;
     }
 }
 
-const loginUser = async (username, password) => {
+const loginUser = async (username, password, res) => {
     try {
-        const user = await authRepository.loginUser(username);
+        let user = await authRepository.loginUser(username);
 
         const isMatch = await passwordHash.verifyPassword(password, user.password);
 
         if (!isMatch) throw new UnauthorizedAccessError('Invalid credentials!');
 
-        return user;
+        const accessToken = await tokenGenerate.getAccessToken(user);
+        const refreshToken = await tokenGenerate.getRefreshToken(res, user);
+
+        user.refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+        user = await user.save();
+
+        user.password = undefined;
+        user.refreshToken = undefined;
+
+        return {user, accessToken};
+    } catch (error) {
+        throw error;
+    }
+}
+
+const logoutUser = async (refreshToken, res) => {
+    try {
+        refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+        const user = await authRepository.logoutUser(refreshToken);
+
+        if (!user) {
+            res.clearCookie('refreshToken', {httpOnly: true, secure: true});
+            return;
+        }
+
+        user.refreshToken = undefined;
+        await user.save();
+
+        res.clearCookie('refreshToken', {httpOnly: true, secure: true});
     } catch (error) {
         throw error;
     }
@@ -129,20 +169,36 @@ const checkOtpValid = async (otp) => {
     }
 }
 
-const resetUserPassword = async (reqBody) => {
+const resetUserPassword = async (reqBody, res) => {
     try {
         if (reqBody.password !== reqBody.confirmPassword) throw new PasswordDoesNotMatchError('Password does not match!');
 
         reqBody.otp = crypto.createHash('sha256').update(reqBody.otp).digest('hex');
 
-        const user = await authRepository.resetUserPassword(reqBody);
+        let user = await authRepository.resetUserPassword(reqBody);
 
-        return user;
+        const accessToken = await tokenGenerate.getAccessToken(user);
+        const refreshToken = await tokenGenerate.getRefreshToken(res, user);
+
+        user.refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+        user = await user.save();
+
+        user.password = undefined;
+        user.refreshToken = undefined;
+
+        return {user, accessToken};
     } catch (error) {
         throw error;
     }
 }
 
 module.exports = {
-    refreshToken, checkRegistrationValid, createUser, loginUser, forgetUserPassword, checkOtpValid, resetUserPassword
+    refreshToken,
+    checkRegistrationValid,
+    createUser,
+    loginUser,
+    logoutUser,
+    forgetUserPassword,
+    checkOtpValid,
+    resetUserPassword
 }

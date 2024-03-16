@@ -43,9 +43,7 @@ const changeUserPassword = async (req) => {
         user.password = await passwordHash.hashPassword(userData.password);
         user.passwordChangedAt = Date.now();
 
-        await user.save();
-
-        return user;
+        return await user.save();
     } catch (error) {
         throw error;
     }

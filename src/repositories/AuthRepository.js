@@ -6,6 +6,14 @@ const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
 
 
+const findUserByIdAndRefreshToken = async (decodedToken, refreshToken) => {
+    try {
+        return await User.findByIdAndRefreshToken(decodedToken.id, refreshToken);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createUser = async (userData) => {
     try {
         const existingUser = await User.findByUsernameOrProfile(userData.username, userData.profile);
@@ -43,6 +51,14 @@ const loginUser = async (username) => {
         if (!user) throw new UnauthorizedAccessError('User not found!');
 
         return user;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const logoutUser = async (refreshToken) => {
+    try {
+        return await User.findOne({refreshToken: refreshToken});
     } catch (error) {
         throw error;
     }
@@ -90,5 +106,12 @@ const resetUserPassword = async (userData) => {
 }
 
 module.exports = {
-    createUser, findUserByProfile, loginUser, forgetUserPassword, findUserByOtp, resetUserPassword,
+    findUserByIdAndRefreshToken,
+    createUser,
+    findUserByProfile,
+    loginUser,
+    logoutUser,
+    forgetUserPassword,
+    findUserByOtp,
+    resetUserPassword,
 }

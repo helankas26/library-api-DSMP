@@ -1,12 +1,12 @@
 const authService = require('../services/AuthService');
 const asyncErrorHandler = require("../utils/AsyncErrorHandler");
 const CredentialsNotFoundError = require("../errors/CredentialsNotFoundError");
-const {sendResponseWithToken, sendResponse} = require("../utils/SendResponseUtil");
+const {sendResponse} = require("../utils/SendResponseUtil");
 
 
 const refreshToken = asyncErrorHandler(async (req, resp, next) => {
-    const user = await authService.refreshToken(req);
-    await sendResponseWithToken(resp, 201, user);
+    const userWithToken = await authService.refreshToken(req);
+    await sendResponse(resp, 201, userWithToken);
 });
 
 const checkRegistrationValid = asyncErrorHandler(async (req, resp, next) => {
@@ -17,8 +17,8 @@ const checkRegistrationValid = asyncErrorHandler(async (req, resp, next) => {
 });
 
 const signup = asyncErrorHandler(async (req, resp, next) => {
-    const user = await authService.createUser(req.body);
-    await sendResponseWithToken(resp, 201, user);
+    const userWithToken = await authService.createUser(req.body, resp);
+    await sendResponse(resp, 201, userWithToken);
 });
 
 const login = asyncErrorHandler(async (req, resp, next) => {
@@ -26,15 +26,15 @@ const login = asyncErrorHandler(async (req, resp, next) => {
 
     if (!username || !password) throw new CredentialsNotFoundError('Please provide username & password!');
 
-    const user = await authService.loginUser(username, password);
-    await sendResponseWithToken(resp, 201, user);
+    const userWithToken = await authService.loginUser(username, password, resp);
+    await sendResponse(resp, 201, userWithToken);
 });
 
 const logout = asyncErrorHandler(async (req, resp, next) => {
     const cookies = req.cookies
     if (!cookies?.refreshToken) return await sendResponse(resp, 204);
 
-    resp.clearCookie('refreshToken', {httpOnly: true, secure: true});
+    await authService.logoutUser(cookies.refreshToken, resp);
     await sendResponse(resp, 204);
 });
 
@@ -54,8 +54,8 @@ const checkOtpValid = asyncErrorHandler(async (req, resp, next) => {
 
 
 const resetPassword = asyncErrorHandler(async (req, resp, next) => {
-    const user = await authService.resetUserPassword(req.body);
-    await sendResponseWithToken(resp, 201, user);
+    const userWithToken = await authService.resetUserPassword(req.body, resp);
+    await sendResponse(resp, 201, userWithToken);
 });
 
 module.exports = {

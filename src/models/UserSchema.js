@@ -42,6 +42,10 @@ const userSchema = new Schema({
     otpExpires: {
         type: Date,
         select: false
+    },
+    refreshToken: {
+        type: String,
+        select: false
     }
 });
 
@@ -55,6 +59,16 @@ userSchema.pre('save', async function (next) {
 
     next();
 });
+
+userSchema.statics.findByIdAndRefreshToken = function (id, refreshToken) {
+    return this.findOne({
+        $and: [
+            {_id: id},
+            {refreshToken: refreshToken}
+        ]
+    });
+};
+
 
 userSchema.statics.findByUsernameOrProfile = function (username, profile) {
     return this.findOne({
