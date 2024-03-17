@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 
 dotenv.config();
 
-const {PORT, HOSTNAME} = require('./config/serverConfig');
+const {PORT, HOSTNAME} = require('./src/config/serverConfig');
 const globalErrorHandler = require('./src/middlewares/GlobalErrorHandler');
 const NotFoundError = require("./src/errors/NotFoundError");
 

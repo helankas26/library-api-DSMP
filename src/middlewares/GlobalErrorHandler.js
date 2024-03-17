@@ -1,4 +1,4 @@
-const {NODE_ENV} = require('../../config/serverConfig');
+const {NODE_ENV} = require('../config/serverConfig');
 const CastError = require("../errors/CastError");
 const DuplicateKeyError = require("../errors/DuplicateKeyError");
 const ValidationErrorHandler = require("../errors/ValidationErrorHandler");
