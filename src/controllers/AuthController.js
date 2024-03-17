@@ -39,9 +39,7 @@ const logout = asyncErrorHandler(async (req, resp, next) => {
 });
 
 const forgetPassword = asyncErrorHandler(async (req, resp, next) => {
-    const {email} = req.body;
-
-    const isEmailSend = await authService.forgetUserPassword(email);
+    const isEmailSend = await authService.forgetUserPassword(req);
     await sendResponse(resp, 200, {send: isEmailSend});
 });
 

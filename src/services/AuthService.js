@@ -129,8 +129,10 @@ const logoutUser = async (refreshToken, res) => {
     }
 }
 
-const forgetUserPassword = async (email) => {
+const forgetUserPassword = async (req) => {
     try {
+        const {email} = req.body;
+
         const user = await authRepository.forgetUserPassword(email);
 
         const resetToken = crypto.randomBytes(8).toString('hex');
@@ -140,7 +142,7 @@ const forgetUserPassword = async (email) => {
 
         await user.save({validateBeforeSave: false});
 
-        const message = `We have received a password reset request. Please use the below OTP to reset your password\n\n\t\t\tOTP is: ${resetToken}\n\nThis reset password OTP will be valid only for 10 minutes.`;
+        const message = `We have received a password reset request. Please use the below OTP to reset your password.\n\n\t\t\tOTP is: ${resetToken}\n\nPlease visit to ${req.headers.origin}/auth/reset-password reset your password.\nThis reset password OTP will be valid only for 10 minutes.`;
 
         try {
             await sendEmail({
