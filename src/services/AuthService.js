@@ -11,6 +11,7 @@ const profileService = require("./ProfileService");
 const UserAlreadyExistsError = require("../errors/UserAlreadyExistsError");
 const BadRequestError = require("../errors/BadRequestError");
 const tokenGenerate = require("../utils/TokenGenerateUtil");
+const {NODE_ENV} = require("../config/serverConfig");
 
 
 const refreshToken = async (req) => {
@@ -106,15 +107,23 @@ const logoutUser = async (refreshToken, res) => {
         refreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
         const user = await authRepository.logoutUser(refreshToken);
 
+        const refreshTokenOptions = {
+            httpOnly: true
+        };
+
+        if (NODE_ENV === 'production') {
+            refreshTokenOptions.secure = true;
+        }
+
         if (!user) {
-            res.clearCookie('refreshToken', {httpOnly: true, secure: true});
+            res.clearCookie('refreshToken', refreshTokenOptions);
             return;
         }
 
         user.refreshToken = undefined;
         await user.save();
 
-        res.clearCookie('refreshToken', {httpOnly: true, secure: true});
+        res.clearCookie('refreshToken', refreshTokenOptions);
     } catch (error) {
         throw error;
     }

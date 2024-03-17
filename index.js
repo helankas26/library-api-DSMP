@@ -15,6 +15,8 @@ dotenv.config();
 const {PORT, HOSTNAME} = require('./src/config/serverConfig');
 const globalErrorHandler = require('./src/middlewares/GlobalErrorHandler');
 const NotFoundError = require("./src/errors/NotFoundError");
+const corsOptions = require("./src/config/corsOptions");
+const allowCredentials = require("./src/middlewares/AccessControlAllowCredentials");
 
 //----------------------- Routes import
 const dashboardRouteRoute = require('./src/routes/api/DashboardRouteRoute');
@@ -41,7 +43,8 @@ process.on('uncaughtException', (err) => {
 
 const app = express();
 app.use(helmet());
-app.use(cors());
+app.use(allowCredentials);
+app.use(cors(corsOptions));
 
 let limiter = rateLimit({
     max: 1000,
