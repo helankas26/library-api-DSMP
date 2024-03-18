@@ -39,6 +39,14 @@ const findProfileById = async (reqParams) => {
     }
 }
 
+const findProfileByAuthUser = async (req) => {
+    try {
+        return await profileRepository.findProfileByAuthUser(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateProfile = async (reqParams, reqBody) => {
     try {
         return await profileRepository.updateProfile(reqParams, reqBody);
@@ -56,5 +64,5 @@ const deleteProfile = async (reqParams) => {
 }
 
 module.exports = {
-    findAllProfiles, createProfile, findProfileById, updateProfile, deleteProfile
+    findAllProfiles, createProfile, findProfileById, findProfileByAuthUser, updateProfile, deleteProfile
 }
