@@ -73,7 +73,7 @@ const createUser = async (reqBody, res) => {
         user.password = undefined;
         user.refreshToken = undefined;
 
-        return {user, accessToken, REFRESH_TOKEN_EXPIRES};
+        return {user, accessToken, refreshTokenExpires: parseInt(REFRESH_TOKEN_EXPIRES)};
     } catch (error) {
         throw error;
     }
@@ -96,7 +96,7 @@ const loginUser = async (username, password, res) => {
         user.password = undefined;
         user.refreshToken = undefined;
 
-        return {user, accessToken, REFRESH_TOKEN_EXPIRES};
+        return {user, accessToken, refreshTokenExpires: parseInt(REFRESH_TOKEN_EXPIRES)};
     } catch (error) {
         throw error;
     }
@@ -197,7 +197,7 @@ const resetUserPassword = async (reqBody, res) => {
         user.password = undefined;
         user.refreshToken = undefined;
 
-        return {user, accessToken, REFRESH_TOKEN_EXPIRES};
+        return {user, accessToken, refreshTokenExpires: parseInt(REFRESH_TOKEN_EXPIRES)};
     } catch (error) {
         throw error;
     }
