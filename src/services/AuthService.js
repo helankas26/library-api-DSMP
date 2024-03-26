@@ -11,7 +11,7 @@ const profileService = require("./ProfileService");
 const UserAlreadyExistsError = require("../errors/UserAlreadyExistsError");
 const BadRequestError = require("../errors/BadRequestError");
 const tokenGenerate = require("../utils/TokenGenerateUtil");
-const {NODE_ENV} = require("../config/serverConfig");
+const {REFRESH_TOKEN_EXPIRES, NODE_ENV} = require('../config/serverConfig');
 
 
 const refreshToken = async (req) => {
@@ -73,7 +73,7 @@ const createUser = async (reqBody, res) => {
         user.password = undefined;
         user.refreshToken = undefined;
 
-        return {user, accessToken};
+        return {user, accessToken, REFRESH_TOKEN_EXPIRES};
     } catch (error) {
         throw error;
     }
@@ -96,7 +96,7 @@ const loginUser = async (username, password, res) => {
         user.password = undefined;
         user.refreshToken = undefined;
 
-        return {user, accessToken};
+        return {user, accessToken, REFRESH_TOKEN_EXPIRES};
     } catch (error) {
         throw error;
     }
@@ -197,7 +197,7 @@ const resetUserPassword = async (reqBody, res) => {
         user.password = undefined;
         user.refreshToken = undefined;
 
-        return {user, accessToken};
+        return {user, accessToken, REFRESH_TOKEN_EXPIRES};
     } catch (error) {
         throw error;
     }
