@@ -18,7 +18,7 @@ const DashboardRouteSchema = new Schema({
         required: true,
         unique: true
     },
-    role: {
+    roles: {
         type: [String],
         enum: ['USER', 'ADMIN'],
         required: true,
@@ -47,7 +47,7 @@ const DashboardRouteSchema = new Schema({
                     },
                 }
             },
-            role: {
+            roles: {
                 type: [String],
                 enum: ['USER', 'ADMIN'],
                 required: true,
@@ -67,7 +67,7 @@ DashboardRouteSchema.statics.findAllByAuthUser = async function (userRole) {
     return await this.aggregate([
         {
             $match: {
-                role: userRole
+                roles: userRole
             }
         },
         {
@@ -75,7 +75,7 @@ DashboardRouteSchema.statics.findAllByAuthUser = async function (userRole) {
         },
         {
             $match: {
-                'subRoutes.role': userRole
+                'subRoutes.roles': userRole
             }
         },
         {
