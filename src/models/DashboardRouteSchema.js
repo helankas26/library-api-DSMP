@@ -88,7 +88,7 @@ DashboardRouteSchema.statics.findAllByAuthUser = async function (userRole) {
                 role: {$first: userRole},
                 subRoutes: {
                     $push: {
-                        id: '$subRoutes._id',
+                        _id: '$subRoutes._id',
                         subRoute: '$subRoutes.subRoute',
                         path: '$subRoutes.path',
                         position: '$subRoutes.position',
