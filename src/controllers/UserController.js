@@ -25,6 +25,11 @@ const updateUser = asyncErrorHandler(async (req, resp, next) => {
 });
 
 const changePassword = asyncErrorHandler(async (req, resp, next) => {
+    if (!req.body.password || !req.body.confirmPassword) {
+        const error = new BadRequestError('Please provide password & confirmPassword!');
+        return next(error);
+    }
+
     const userWithToken = await userService.changeUserPassword(req, resp);
     await sendResponse(resp, 201, userWithToken);
 });

@@ -17,7 +17,7 @@ router.route('/')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllProfiles)
     .post(authMiddleware.checkPermission('ADMIN'), profileController.createProfile);
 
-router.route('/auth') .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findProfileByAuthUser)
+router.route('/auth') .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findProfileByAuthUser);
 
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findProfileById)

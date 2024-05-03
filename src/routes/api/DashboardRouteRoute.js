@@ -18,7 +18,7 @@ router.route('/')
     .post(authMiddleware.checkPermission('ADMIN'), dashboardRouteController.createDashboardRoute);
 
 router.route('/auth')
-    .get(authMiddleware.checkPermission('ADMIN', 'USER'), dashboardRouteController.findAllDashboardRoutesByAuthUser)
+    .get(authMiddleware.checkPermission('ADMIN', 'USER'), dashboardRouteController.findAllDashboardRoutesByAuthUser);
 
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), dashboardRouteController.findDashboardRouteById)

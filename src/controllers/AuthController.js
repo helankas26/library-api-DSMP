@@ -1,6 +1,7 @@
 const authService = require('../services/AuthService');
 const asyncErrorHandler = require("../utils/AsyncErrorHandler");
 const CredentialsNotFoundError = require("../errors/CredentialsNotFoundError");
+const BadRequestError = require("../errors/BadRequestError");
 const {sendResponse} = require("../utils/SendResponseUtil");
 
 
@@ -52,6 +53,10 @@ const checkOtpValid = asyncErrorHandler(async (req, resp, next) => {
 
 
 const resetPassword = asyncErrorHandler(async (req, resp, next) => {
+    const {password, confirmPassword} = req.body;
+
+    if (!password || !confirmPassword) throw new BadRequestError('Please provide password & confirmPassword!');
+
     const userWithToken = await authService.resetUserPassword(req.body, resp);
     await sendResponse(resp, 201, userWithToken);
 });
