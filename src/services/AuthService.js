@@ -60,7 +60,11 @@ const checkRegistrationValid = async (regNo) => {
 
 const createUser = async (reqBody, res) => {
     try {
-        if (reqBody.password !== reqBody.confirmPassword) throw new PasswordDoesNotMatchError('Password does not match!');
+        const {username, password, confirmPassword} = reqBody;
+
+        if (!username) throw new BadRequestError('Please provide username!');
+        if (!password || !confirmPassword) throw new BadRequestError('Please provide password & confirmPassword!');
+        if (password !== confirmPassword) throw new PasswordDoesNotMatchError('Password does not match!');
 
         let user = await authRepository.createUser(reqBody);
 
