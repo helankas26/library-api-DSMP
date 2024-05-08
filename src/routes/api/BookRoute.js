@@ -3,7 +3,7 @@ const express = require('express');
 const bookController = require('../../controllers/BookController');
 const paramMiddleware = require('../../middlewares/ParamMiddleware');
 const authMiddleware = require('../../middlewares/AuthMiddleware');
-const Book = require('../../models/BookSchema')
+const Book = require('../../models/BookSchema');
 
 const router = express.Router();
 
@@ -14,6 +14,9 @@ router.param('id', async (req, res, next, value) => {
 router.route('/')
     .get(bookController.findAllBooks)
     .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.createBook);
+
+router.route('/find-all')
+    .get(bookController.findAllBooksWithPagination);
 
 router.route('/:id')
     .get(authMiddleware.verifyToken, bookController.findBookById)

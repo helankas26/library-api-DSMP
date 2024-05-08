@@ -8,6 +8,22 @@ const findAllBooks = async () => {
     }
 }
 
+const findAllBooksWithPagination = async (page, size) => {
+    try {
+        const totalCount = await Book.countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const books = await Book.find({}).skip(skip).limit(size);
+        const to = skip + books.length;
+
+        return {books, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createBook = async (bookData) => {
     try {
         const book = new Book({
@@ -50,5 +66,5 @@ const deleteBook = async (params) => {
 }
 
 module.exports = {
-    findAllBooks, createBook, findBookById, updateBook, deleteBook
+    findAllBooks, findAllBooksWithPagination, createBook, findBookById, updateBook, deleteBook
 }
