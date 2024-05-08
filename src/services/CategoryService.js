@@ -8,6 +8,18 @@ const findAllCategories = async () => {
     }
 }
 
+const findAllBooksWithPaginationById = async (req) => {
+    const id = req.params.id;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 12;
+
+    try {
+        return await categoryRepository.findAllBooksWithPaginationById(id, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createCategory = async (reqBody) => {
     try {
         return await categoryRepository.createCategory(reqBody);
@@ -41,5 +53,5 @@ const deleteCategory = async (reqParams) => {
 }
 
 module.exports = {
-    findAllCategories, createCategory, findCategoryById, updateCategory, deleteCategory
+    findAllCategories, findAllBooksWithPaginationById, createCategory, findCategoryById, updateCategory, deleteCategory
 }

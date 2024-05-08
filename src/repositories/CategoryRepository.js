@@ -8,6 +8,28 @@ const findAllCategories = async () => {
     }
 }
 
+const findAllBooksWithPaginationById = async (id, page, size) => {
+    try {
+        const totalCount = (await Category.findById(id)).books.length;
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const {books} = await Category.findById(id).populate({
+            path: 'books',
+            options: {
+                skip: skip,
+                limit: size
+            }
+        });
+        const to = skip + books.length;
+
+        return {books, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createCategory = async (categoryData) => {
     try {
         const category = new Category({
@@ -46,5 +68,5 @@ const deleteCategory = async (params) => {
 }
 
 module.exports = {
-    findAllCategories, createCategory, findCategoryById, updateCategory, deleteCategory
+    findAllCategories, findAllBooksWithPaginationById, createCategory, findCategoryById, updateCategory, deleteCategory
 }

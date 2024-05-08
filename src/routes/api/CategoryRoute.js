@@ -3,7 +3,7 @@ const express = require('express');
 const categoryController = require('../../controllers/CategoryController');
 const paramMiddleware = require('../../middlewares/ParamMiddleware');
 const authMiddleware = require('../../middlewares/AuthMiddleware');
-const Category = require('../../models/CategorySchema')
+const Category = require('../../models/CategorySchema');
 
 const router = express.Router();
 
@@ -14,6 +14,9 @@ router.param('id', async (req, res, next, value) => {
 router.route('/')
     .get(categoryController.findAllCategories)
     .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.createCategory);
+
+router.route('/find-all/:id')
+    .get(categoryController.findAllBooksWithPaginationById);
 
 router.route('/:id')
     .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.findCategoryById)
