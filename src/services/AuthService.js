@@ -146,7 +146,7 @@ const forgetUserPassword = async (req) => {
 
         await user.save({validateBeforeSave: false});
 
-        const message = `We have received a password reset request. Please use the below OTP to reset your password.\n\n\t\t\tOTP is: ${resetToken}\n\nPlease visit to ${req.headers.origin}/auth/reset-password reset your password.\nThis reset password OTP will be valid only for 10 minutes.`;
+        const message = `We have received a password reset request. Please use the below OTP to reset your password.\n\n\t\t\tOTP is: ${resetToken}\n\nPlease visit to ${req.headers.origin}/auth/reset-password to reset your password.\nThis reset password OTP will be valid only for 10 minutes.`;
 
         try {
             await sendEmail({

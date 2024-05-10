@@ -9,11 +9,11 @@ const findAllProfiles = async () => {
     }
 }
 
-const createProfile = async (reqBody) => {
+const createProfile = async (req) => {
     try {
-        const profile = await profileRepository.createProfile(reqBody);
+        const profile = await profileRepository.createProfile(req.body);
 
-        const message = `You have been successfully registered for our Library. Please use the below registration ID to create account.\n\n\t\t\tYour Registration ID is: ${profile.id}`;
+        const message = `You have been successfully registered for our Library. Please use the below registration ID to create account.\n\n\t\t\tYour Registration ID is: ${profile.id}\n\nPlease visit to ${req.headers.origin} to signup.`;
 
         try {
             await sendEmail({

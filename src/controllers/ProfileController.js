@@ -9,7 +9,7 @@ const findAllProfiles = asyncErrorHandler(async (req, resp, next) => {
 });
 
 const createProfile = asyncErrorHandler(async (req, resp, next) => {
-    const profile = await profileService.createProfile(req.body);
+    const profile = await profileService.createProfile(req);
     await sendResponse(resp, 201, {profile});
 });
 
