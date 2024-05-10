@@ -26,7 +26,7 @@ const validationErrorHandler = (err) => {
     const errors = Object.values(err.errors).map(val => val.message);
     const errorMsg = errors.join(' ');
 
-    return new ValidationErrorHandler(`Invalid input data: ${errorMsg}`);
+    return new ValidationErrorHandler(`Invalid input: ${errorMsg}`);
 }
 
 const tokenExpiredErrorHandler = (err) => {
