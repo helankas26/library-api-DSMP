@@ -15,6 +15,7 @@ dotenv.config();
 const {PORT, HOSTNAME} = require('./src/config/serverConfig');
 const globalErrorHandler = require('./src/middlewares/GlobalErrorHandler');
 const NotFoundError = require("./src/errors/NotFoundError");
+const TooManyRequestsError = require("./src/errors/TooManyRequestsError");
 const corsOptions = require("./src/config/corsOptions");
 const allowCredentials = require("./src/middlewares/AccessControlAllowCredentials");
 
@@ -46,10 +47,15 @@ app.use(helmet());
 app.use(allowCredentials);
 app.use(cors(corsOptions));
 
+const customRateLimitHandler = (req, res, next) => {
+    const err = new TooManyRequestsError('Too many requests from this IP, Please try again one hour later.');
+    next(err);
+};
+
 let limiter = rateLimit({
     max: 1000,
     windowMs: 60 * 60 * 1000,
-    message: 'Too many requests from this IP. Please try after one hour.'
+    handler: customRateLimitHandler
 });
 
 app.use('/api', limiter);
