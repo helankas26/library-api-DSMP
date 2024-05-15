@@ -15,12 +15,12 @@ router.route('/')
     .get(categoryController.findAllCategories)
     .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.createCategory);
 
-router.route('/find-all/:id')
-    .get(categoryController.findAllBooksWithPaginationById);
-
 router.route('/:id')
     .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.findCategoryById)
     .patch(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.updateCategory)
     .delete(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.deleteCategory);
+
+router.route('/:id/books')
+    .get(categoryController.findAllBooksWithPaginationById);
 
 module.exports = router;

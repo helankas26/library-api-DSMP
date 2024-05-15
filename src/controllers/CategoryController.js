@@ -10,7 +10,7 @@ const findAllCategories = asyncErrorHandler(async (req, resp, next) => {
 
 const findAllBooksWithPaginationById = asyncErrorHandler(async (req, resp, next) => {
     const booksWithPaginationById = await categoryService.findAllBooksWithPaginationById(req);
-    await sendResponse(resp, 201, booksWithPaginationById);
+    await sendResponse(resp, 200, booksWithPaginationById);
 });
 
 const createCategory = asyncErrorHandler(async (req, resp, next) => {
