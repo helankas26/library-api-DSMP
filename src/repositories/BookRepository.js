@@ -24,6 +24,22 @@ const findAllBooksWithPagination = async (page, size) => {
     }
 }
 
+const findAllBooksBySearchWithPagination = async (searchText, page, size) => {
+    try {
+        const totalCount = await Book.find({$text: {$search: searchText}}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const books = await Book.find({$text: {$search: searchText}}).skip(skip).limit(size);
+        const to = skip + books.length;
+
+        return {books, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createBook = async (bookData) => {
     try {
         const book = new Book({
@@ -66,5 +82,11 @@ const deleteBook = async (params) => {
 }
 
 module.exports = {
-    findAllBooks, findAllBooksWithPagination, createBook, findBookById, updateBook, deleteBook
+    findAllBooks,
+    findAllBooksWithPagination,
+    findAllBooksBySearchWithPagination,
+    createBook,
+    findBookById,
+    updateBook,
+    deleteBook
 }

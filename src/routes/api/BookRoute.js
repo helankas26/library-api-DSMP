@@ -15,8 +15,11 @@ router.route('/')
     .get(bookController.findAllBooks)
     .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.createBook);
 
-router.route('/find-all')
+router.route('/list')
     .get(bookController.findAllBooksWithPagination);
+
+router.route('/query')
+    .get(bookController.findAllBooksBySearchWithPagination);
 
 router.route('/:id')
     .get(authMiddleware.verifyToken, bookController.findBookById)

@@ -5,12 +5,17 @@ const {sendResponse} = require("../utils/SendResponseUtil");
 
 const findAllBooks = asyncErrorHandler(async (req, resp, next) => {
     const books = await bookService.findAllBooks();
-    await sendResponse(resp, 201, {books: books, count: books.length});
+    await sendResponse(resp, 200, {books: books, count: books.length});
 });
 
 const findAllBooksWithPagination = asyncErrorHandler(async (req, resp, next) => {
     const booksWithPagination = await bookService.findAllBooksWithPagination(req);
-    await sendResponse(resp, 201, booksWithPagination);
+    await sendResponse(resp, 200, booksWithPagination);
+});
+
+const findAllBooksBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const booksWithPagination = await bookService.findAllBooksBySearchWithPagination(req);
+    await sendResponse(resp, 200, booksWithPagination);
 });
 
 const createBook = asyncErrorHandler(async (req, resp, next) => {
@@ -34,5 +39,11 @@ const deleteBook = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllBooks, findAllBooksWithPagination, createBook, findBookById, updateBook, deleteBook
+    findAllBooks,
+    findAllBooksWithPagination,
+    findAllBooksBySearchWithPagination,
+    createBook,
+    findBookById,
+    updateBook,
+    deleteBook
 }

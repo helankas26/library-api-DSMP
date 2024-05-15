@@ -19,6 +19,18 @@ const findAllBooksWithPagination = async (req) => {
     }
 }
 
+const findAllBooksBySearchWithPagination = async (req) => {
+    const searchText = req.query.searchText;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 12;
+
+    try {
+        return await bookRepository.findAllBooksBySearchWithPagination(searchText, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createBook = async (reqBody) => {
     try {
         return await bookRepository.createBook(reqBody);
@@ -52,5 +64,11 @@ const deleteBook = async (reqParams) => {
 }
 
 module.exports = {
-    findAllBooks, findAllBooksWithPagination, createBook, findBookById, updateBook, deleteBook
+    findAllBooks,
+    findAllBooksWithPagination,
+    findAllBooksBySearchWithPagination,
+    createBook,
+    findBookById,
+    updateBook,
+    deleteBook
 }
