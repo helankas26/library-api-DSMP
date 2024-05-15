@@ -21,7 +21,7 @@ const updateUser = asyncErrorHandler(async (req, resp, next) => {
     }
 
     const user = await userService.updateUser(req);
-    await sendResponse(resp, 200, {user});
+    await sendResponse(resp, 201, {user});
 });
 
 const changePassword = asyncErrorHandler(async (req, resp, next) => {
@@ -36,7 +36,7 @@ const changePassword = asyncErrorHandler(async (req, resp, next) => {
 
 const deleteUser = asyncErrorHandler(async (req, resp, next) => {
     const user = await userService.deleteUser(req.params);
-    await sendResponse(resp, 200, {id: user._id});
+    await sendResponse(resp, 204, {id: user._id});
 });
 
 module.exports = {

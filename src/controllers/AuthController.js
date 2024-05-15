@@ -7,7 +7,7 @@ const {sendResponse} = require("../utils/SendResponseUtil");
 
 const refreshToken = asyncErrorHandler(async (req, resp, next) => {
     const userWithToken = await authService.refreshToken(req);
-    await sendResponse(resp, 201, userWithToken);
+    await sendResponse(resp, 200, userWithToken);
 });
 
 const checkRegistrationValid = asyncErrorHandler(async (req, resp, next) => {
@@ -28,7 +28,7 @@ const login = asyncErrorHandler(async (req, resp, next) => {
     if (!username || !password) throw new CredentialsNotFoundError('Please provide username & password!');
 
     const userWithToken = await authService.loginUser(username, password, resp);
-    await sendResponse(resp, 201, userWithToken);
+    await sendResponse(resp, 200, userWithToken);
 });
 
 const logout = asyncErrorHandler(async (req, resp, next) => {

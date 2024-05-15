@@ -4,8 +4,7 @@ const authController = require('../../controllers/AuthController');
 
 const router = express.Router();
 
-router.route('/refresh').get(authController.refreshToken);
-
+router.route('/refresh').post(authController.refreshToken);
 router.route('/checkRegNoValid').post(authController.checkRegistrationValid);
 router.route('/signup').post(authController.signup);
 router.route('/login').post(authController.login);
