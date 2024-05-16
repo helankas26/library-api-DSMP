@@ -8,6 +8,16 @@ const findAllProfiles = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {profiles: profiles, count: profiles.length});
 });
 
+const findAllProfilesWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const profilesWithPagination = await profileService.findAllProfilesWithPagination(req);
+    await sendResponse(resp, 200, profilesWithPagination);
+});
+
+const findAllProfilesBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const profilesWithPagination = await profileService.findAllProfilesBySearchWithPagination(req);
+    await sendResponse(resp, 200, profilesWithPagination);
+});
+
 const createProfile = asyncErrorHandler(async (req, resp, next) => {
     const profile = await profileService.createProfile(req);
     await sendResponse(resp, 201, {profile});
@@ -34,5 +44,12 @@ const deleteProfile = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllProfiles, createProfile, findProfileById, findProfileByAuthUser, updateProfile, deleteProfile
+    findAllProfiles,
+    findAllProfilesWithPagination,
+    findAllProfilesBySearchWithPagination,
+    createProfile,
+    findProfileById,
+    findProfileByAuthUser,
+    updateProfile,
+    deleteProfile
 }

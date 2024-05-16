@@ -9,6 +9,29 @@ const findAllProfiles = async () => {
     }
 }
 
+const findAllProfilesWithPagination = async (req) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 20;
+
+    try {
+        return await profileRepository.findAllProfilesWithPagination(page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllProfilesBySearchWithPagination = async (req) => {
+    const searchText = req.query.searchText;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 20;
+
+    try {
+        return await profileRepository.findAllProfilesBySearchWithPagination(searchText, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createProfile = async (req) => {
     try {
         const profile = await profileRepository.createProfile(req.body);
@@ -64,5 +87,12 @@ const deleteProfile = async (reqParams) => {
 }
 
 module.exports = {
-    findAllProfiles, createProfile, findProfileById, findProfileByAuthUser, updateProfile, deleteProfile
+    findAllProfiles,
+    findAllProfilesWithPagination,
+    findAllProfilesBySearchWithPagination,
+    createProfile,
+    findProfileById,
+    findProfileByAuthUser,
+    updateProfile,
+    deleteProfile
 }

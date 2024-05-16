@@ -9,6 +9,38 @@ const findAllProfiles = async () => {
     }
 }
 
+const findAllProfilesWithPagination = async (page, size) => {
+    try {
+        const totalCount = await Profile.countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const profiles = await Profile.find({}).skip(skip).limit(size);
+        const to = skip + profiles.length;
+
+        return {profiles, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllProfilesBySearchWithPagination = async (searchText, page, size) => {
+    try {
+        const totalCount = await Profile.find({$text: {$search: searchText}}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const profiles = await Profile.find({$text: {$search: searchText}}).skip(skip).limit(size);
+        const to = skip + profiles.length;
+
+        return {profiles, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createProfile = async (profileData) => {
     try {
         const profile = new Profile({
@@ -60,5 +92,12 @@ const deleteProfile = async (params) => {
 }
 
 module.exports = {
-    findAllProfiles, createProfile, findProfileById, findProfileByAuthUser, updateProfile, deleteProfile
+    findAllProfiles,
+    findAllProfilesWithPagination,
+    findAllProfilesBySearchWithPagination,
+    createProfile,
+    findProfileById,
+    findProfileByAuthUser,
+    updateProfile,
+    deleteProfile
 }
