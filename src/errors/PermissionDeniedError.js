@@ -2,7 +2,7 @@ class PermissionDeniedError extends Error {
     constructor(message) {
         super(message);
         this.name = 'PermissionDeniedError';
-        this.statusCode = 403;
+        this.statusCode = 401;
         this.status = 'fail';
 
         this.isOperational = true;
