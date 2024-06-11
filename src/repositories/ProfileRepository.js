@@ -1,5 +1,7 @@
 const Profile = require('../models/ProfileSchema');
+const User = require('../models/UserSchema');
 const idGenerate = require("../utils/IdGenerateUtil");
+const UnprocessableError = require("../errors/UnprocessableError");
 
 const findAllProfiles = async () => {
     try {
@@ -85,6 +87,11 @@ const updateProfile = async (params, profileData) => {
 
 const deleteProfile = async (params) => {
     try {
+        const user = await User.findOne({profile: params.id});
+
+        if (user) {
+            throw new UnprocessableError('Could not delete. This profile associated with user account!');
+        }
         return await Profile.findByIdAndDelete(params.id);
     } catch (error) {
         throw error;
