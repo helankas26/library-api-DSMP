@@ -11,13 +11,21 @@ router.param('id', async (req, res, next, value) => {
     await paramMiddleware.verifyId(req, res, next, value, Author);
 });
 
+router.use(authMiddleware.verifyToken);
+
 router.route('/')
-    .get(authorController.findAllAuthors)
-    .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), authorController.createAuthor);
+    .get(authMiddleware.checkPermission('ADMIN'), authorController.findAllAuthors)
+    .post(authMiddleware.checkPermission('ADMIN'), authorController.createAuthor);
+
+router.route('/list')
+    .get(authMiddleware.checkPermission('ADMIN'), authorController.findAllAuthorsWithPagination);
+
+router.route('/query')
+    .get(authMiddleware.checkPermission('ADMIN'), authorController.findAllAuthorsBySearchWithPagination);
 
 router.route('/:id')
-    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), authorController.findAuthorById)
-    .patch(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), authorController.updateAuthor)
-    .delete(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), authorController.deleteAuthor);
+    .get(authMiddleware.checkPermission('ADMIN'), authorController.findAuthorById)
+    .patch(authMiddleware.checkPermission('ADMIN'), authorController.updateAuthor)
+    .delete(authMiddleware.checkPermission('ADMIN'), authorController.deleteAuthor);
 
 module.exports = router;

@@ -15,4 +15,6 @@ const authorSchema = new Schema({
     ]
 });
 
+authorSchema.index({name: "text"});
+
 module.exports = model('Author', authorSchema);

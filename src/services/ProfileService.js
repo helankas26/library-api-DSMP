@@ -11,7 +11,7 @@ const findAllProfiles = async () => {
 
 const findAllProfilesWithPagination = async (req) => {
     const page = parseInt(req.query.page) || 1;
-    const size = parseInt(req.query.size) || 20;
+    const size = parseInt(req.query.size) || 24;
 
     try {
         return await profileRepository.findAllProfilesWithPagination(page, size);
@@ -23,7 +23,7 @@ const findAllProfilesWithPagination = async (req) => {
 const findAllProfilesBySearchWithPagination = async (req) => {
     const searchText = req.query.searchText;
     const page = parseInt(req.query.page) || 1;
-    const size = parseInt(req.query.size) || 20;
+    const size = parseInt(req.query.size) || 24;
 
     try {
         return await profileRepository.findAllProfilesBySearchWithPagination(searchText, page, size);
