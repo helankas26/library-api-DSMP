@@ -16,7 +16,10 @@ const findAllAuthorsWithPagination = async (page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const authors = await Author.find({}).skip(skip).limit(size);
+        const authors = await Author.find({}).skip(skip).limit(size).populate({
+            path: 'books',
+            select: ['title', 'edition']
+        });
         const to = skip + authors.length;
 
         return {authors, totalCount, totalPages, from, to};
@@ -32,7 +35,10 @@ const findAllAuthorsBySearchWithPagination = async (searchText, page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const authors = await Author.find({$text: {$search: searchText}}).skip(skip).limit(size);
+        const authors = await Author.find({$text: {$search: searchText}}).skip(skip).limit(size).populate({
+            path: 'books',
+            select: ['title', 'edition']
+        });
         const to = skip + authors.length;
 
         return {authors, totalCount, totalPages, from, to};
