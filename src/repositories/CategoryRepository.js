@@ -1,8 +1,47 @@
 const Category = require('../models/CategorySchema');
+const UnprocessableError = require("../errors/UnprocessableError");
 
 const findAllCategories = async () => {
     try {
         return await Category.find();
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllCategoriesWithPagination = async (page, size) => {
+    try {
+        const totalCount = await Category.countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const categories = await Category.find({}).skip(skip).limit(size).populate({
+            path: 'books',
+            select: ['title', 'edition']
+        });
+        const to = skip + categories.length;
+
+        return {categories, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllCategoriesBySearchWithPagination = async (searchText, page, size) => {
+    try {
+        const totalCount = await Category.find({$text: {$search: searchText}}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const categories = await Category.find({$text: {$search: searchText}}).skip(skip).limit(size).populate({
+            path: 'books',
+            select: ['title', 'edition']
+        });
+        const to = skip + categories.length;
+
+        return {categories, totalCount, totalPages, from, to};
     } catch (error) {
         throw error;
     }
@@ -45,7 +84,10 @@ const createCategory = async (categoryData) => {
 
 const findCategoryById = async (params) => {
     try {
-        return await Category.findById(params.id);
+        return await Category.findById(params.id).populate({
+            path: 'books',
+            select: ['title', 'edition']
+        });
     } catch (error) {
         throw error;
     }
@@ -61,6 +103,11 @@ const updateCategory = async (params, categoryData) => {
 
 const deleteCategory = async (params) => {
     try {
+        const category = await Category.findById(params.id);
+
+        if (category.books.length) {
+            throw new UnprocessableError('Could not delete. This category associated with books!');
+        }
         return await Category.findByIdAndDelete(params.id);
     } catch (error) {
         throw error;
@@ -68,5 +115,12 @@ const deleteCategory = async (params) => {
 }
 
 module.exports = {
-    findAllCategories, findAllBooksWithPaginationById, createCategory, findCategoryById, updateCategory, deleteCategory
+    findAllCategories,
+    findAllCategoriesWithPagination,
+    findAllCategoriesBySearchWithPagination,
+    findAllBooksWithPaginationById,
+    createCategory,
+    findCategoryById,
+    updateCategory,
+    deleteCategory
 }

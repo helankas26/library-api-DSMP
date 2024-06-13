@@ -8,6 +8,29 @@ const findAllCategories = async () => {
     }
 }
 
+const findAllCategoriesWithPagination = async (req) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await categoryRepository.findAllCategoriesWithPagination(page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllCategoriesBySearchWithPagination = async (req) => {
+    const searchText = req.query.searchText;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await categoryRepository.findAllCategoriesBySearchWithPagination(searchText, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const findAllBooksWithPaginationById = async (req) => {
     const id = req.params.id;
     const page = parseInt(req.query.page) || 1;
@@ -53,5 +76,12 @@ const deleteCategory = async (reqParams) => {
 }
 
 module.exports = {
-    findAllCategories, findAllBooksWithPaginationById, createCategory, findCategoryById, updateCategory, deleteCategory
+    findAllCategories,
+    findAllCategoriesWithPagination,
+    findAllCategoriesBySearchWithPagination,
+    findAllBooksWithPaginationById,
+    createCategory,
+    findCategoryById,
+    updateCategory,
+    deleteCategory
 }

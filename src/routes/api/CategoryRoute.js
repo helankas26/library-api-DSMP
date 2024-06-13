@@ -15,6 +15,12 @@ router.route('/')
     .get(categoryController.findAllCategories)
     .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.createCategory);
 
+router.route('/list')
+    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.findAllCategoriesWithPagination);
+
+router.route('/query')
+    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.findAllCategoriesBySearchWithPagination);
+
 router.route('/:id')
     .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.findCategoryById)
     .patch(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), categoryController.updateCategory)

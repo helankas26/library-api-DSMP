@@ -19,4 +19,6 @@ const categorySchema = new Schema({
     ]
 });
 
+categorySchema.index({categoryName: "text", description: "text"});
+
 module.exports = model('Category', categorySchema);

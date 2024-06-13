@@ -8,6 +8,16 @@ const findAllCategories = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {categories: categories, count: categories.length});
 });
 
+const findAllCategoriesWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const categoriesWithPagination = await categoryService.findAllCategoriesWithPagination(req);
+    await sendResponse(resp, 200, categoriesWithPagination);
+});
+
+const findAllCategoriesBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const categoriesWithPagination = await categoryService.findAllCategoriesBySearchWithPagination(req);
+    await sendResponse(resp, 200, categoriesWithPagination);
+});
+
 const findAllBooksWithPaginationById = asyncErrorHandler(async (req, resp, next) => {
     const booksWithPaginationById = await categoryService.findAllBooksWithPaginationById(req);
     await sendResponse(resp, 200, booksWithPaginationById);
@@ -34,5 +44,12 @@ const deleteCategory = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllCategories, findAllBooksWithPaginationById, createCategory, findCategoryById, updateCategory, deleteCategory
+    findAllCategories,
+    findAllCategoriesWithPagination,
+    findAllCategoriesBySearchWithPagination,
+    findAllBooksWithPaginationById,
+    createCategory,
+    findCategoryById,
+    updateCategory,
+    deleteCategory
 }
