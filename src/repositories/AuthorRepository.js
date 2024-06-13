@@ -61,7 +61,10 @@ const createAuthor = async (authorData) => {
 
 const findAuthorById = async (params) => {
     try {
-        return await Author.findById(params.id);
+        return await Author.findById(params.id).populate({
+            path: 'books',
+            select: ['title', 'edition']
+        });
     } catch (error) {
         throw error;
     }
