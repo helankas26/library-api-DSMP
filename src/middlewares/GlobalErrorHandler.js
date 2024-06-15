@@ -46,7 +46,7 @@ const prodErrors = (err, res) => {
     } else {
         return res.status(500).json({
             status: 'error',
-            message: 'Something went wrong! Please try again later.'
+            message: err.message || 'Something went wrong! Please try again later.'
         });
     }
 }
