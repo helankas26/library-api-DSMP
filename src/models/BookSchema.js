@@ -35,8 +35,24 @@ const bookSchema = new Schema({
         default: () => Date.now(),
         immutable: true
     }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
 });
 
 bookSchema.index({title: "text", edition: "text", description: "text"});
+
+bookSchema.virtual('authors', {
+    ref: 'Author',
+    localField: '_id',
+    foreignField: 'books'
+});
+
+bookSchema.virtual('category', {
+    ref: 'Category',
+    localField: '_id',
+    foreignField: 'books',
+    justOne: true
+});
 
 module.exports = model('Book', bookSchema);
