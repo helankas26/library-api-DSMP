@@ -3,7 +3,13 @@ const {updateConfigReqObj} = require("../utils/FilterRequestUtil");
 
 const findAllConfigs = async () => {
     try {
-        return await Config.find();
+        return await Config.find()
+            .populate({path: 'admission.librarian', select: ['fullName']})
+            .populate({path: 'subscription.librarian', select: ['fullName']})
+            .populate({path: 'fine.librarian', select: ['fullName']})
+            .populate({path: 'noOfReservation.librarian', select: ['fullName']})
+            .populate({path: 'noOfBorrow.librarian', select: ['fullName']})
+            .populate({path: 'borrowableDate.librarian', select: ['fullName']});
     } catch (error) {
         throw error;
     }
@@ -48,7 +54,13 @@ const createConfig = async (req) => {
 
 const findConfigById = async (params) => {
     try {
-        return await Config.findById(params.id);
+        return await Config.findById(params.id)
+            .populate({path: 'admission.librarian', select: ['fullName']})
+            .populate({path: 'subscription.librarian', select: ['fullName']})
+            .populate({path: 'fine.librarian', select: ['fullName']})
+            .populate({path: 'noOfReservation.librarian', select: ['fullName']})
+            .populate({path: 'noOfBorrow.librarian', select: ['fullName']})
+            .populate({path: 'borrowableDate.librarian', select: ['fullName']});
     } catch (error) {
         throw error;
     }
