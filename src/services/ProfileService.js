@@ -34,7 +34,8 @@ const findAllProfilesBySearchWithPagination = async (req) => {
 
 const createProfile = async (req) => {
     try {
-        const profile = await profileRepository.createProfile(req.body);
+        const profileWithAdmission = await profileRepository.createProfile(req);
+        const {savedProfile: profile, savedAdmission: admission} = profileWithAdmission;
 
         const message = `You have been successfully registered for our Library. Please use the below registration ID to create account.\n\n\t\t\tYour Registration ID is: ${profile.id}\n\nPlease visit to ${req.headers.origin} to signup.`;
 
@@ -45,9 +46,9 @@ const createProfile = async (req) => {
                 message: message
             });
 
-            return profile;
+            return {profile, admission};
         } catch {
-            throw new Error('There was an error sending password reset email. Please try again later');
+            throw new Error('There was an error sending account creation email. Please try again later');
         }
     } catch (error) {
         throw error;

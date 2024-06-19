@@ -19,8 +19,8 @@ const findAllProfilesBySearchWithPagination = asyncErrorHandler(async (req, resp
 });
 
 const createProfile = asyncErrorHandler(async (req, resp, next) => {
-    const profile = await profileService.createProfile(req);
-    await sendResponse(resp, 201, {profile});
+    const profileWithAdmission = await profileService.createProfile(req);
+    await sendResponse(resp, 201, profileWithAdmission);
 });
 
 const findProfileById = asyncErrorHandler(async (req, resp, next) => {

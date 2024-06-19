@@ -2,6 +2,8 @@ const Profile = require('../models/ProfileSchema');
 const User = require('../models/UserSchema');
 const idGenerate = require("../utils/IdGenerateUtil");
 const UnprocessableError = require("../errors/UnprocessableError");
+const Admission = require("../models/AdmissionSchema");
+const Config = require("../models/ConfigSchema");
 
 const findAllProfiles = async () => {
     try {
@@ -43,7 +45,9 @@ const findAllProfilesBySearchWithPagination = async (searchText, page, size) => 
     }
 }
 
-const createProfile = async (profileData) => {
+const createProfile = async (req) => {
+    const profileData = req.body;
+
     try {
         const profile = new Profile({
             _id: await idGenerate.generateId(new Date(), await Profile.findByCreatedAtForCurrentMonth()),
@@ -55,7 +59,31 @@ const createProfile = async (profileData) => {
             type: profileData.type
         });
 
-        return await profile.save();
+        const savedProfile = await profile.save();
+        if (!savedProfile) {
+            throw new Error("Could not create profile. Try again!");
+        }
+
+        try {
+            const admission = new Admission({
+                fee: await (async () => {
+                    const config = await Config.findOne();
+                    return config.admission.fee;
+                })(),
+                member: savedProfile._id,
+                librarian: req.user.profile
+            });
+
+            const savedAdmission = await admission.save();
+            if (!savedAdmission) {
+                throw new Error('Admission unpaid. Could not create profile. Try again!');
+            }
+
+            return {savedProfile, savedAdmission};
+        } catch (error) {
+            await Profile.findByIdAndDelete(savedProfile._id);
+            throw error;
+        }
     } catch (error) {
         throw error;
     }
