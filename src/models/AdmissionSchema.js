@@ -46,4 +46,8 @@ const admissionSchema = new Schema({
     }
 });
 
+admissionSchema.index({member: "text", librarian: "text"});
+admissionSchema.index({member: 1});
+admissionSchema.index({librarian: 1});
+
 module.exports = model('Admission', admissionSchema);

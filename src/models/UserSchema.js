@@ -49,7 +49,7 @@ const userSchema = new Schema({
     }
 });
 
-userSchema.index({_id: "text", username: "text", profile: "text", role: "text"});
+userSchema.index({username: "text", profile: "text", role: "text"});
 
 userSchema.pre('save', async function (next) {
     const user = await Profile.findOne({_id: this.profile});

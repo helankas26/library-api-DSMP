@@ -8,6 +8,16 @@ const findAllAdmissions = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {admissions: admissions, count: admissions.length});
 });
 
+const findAllAdmissionsWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const admissionsWithPagination = await admissionService.findAllAdmissionsWithPagination(req);
+    await sendResponse(resp, 200, admissionsWithPagination);
+});
+
+const findAllAdmissionsBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const admissionsWithPagination = await admissionService.findAllAdmissionsBySearchWithPagination(req);
+    await sendResponse(resp, 200, admissionsWithPagination);
+});
+
 const createAdmission = asyncErrorHandler(async (req, resp, next) => {
     const admission = await admissionService.createAdmission(req);
     await sendResponse(resp, 201, {admission});
@@ -29,5 +39,11 @@ const deleteAdmission = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllAdmissions, createAdmission, findAdmissionById, updateAdmission, deleteAdmission
+    findAllAdmissions,
+    findAllAdmissionsWithPagination,
+    findAllAdmissionsBySearchWithPagination,
+    createAdmission,
+    findAdmissionById,
+    updateAdmission,
+    deleteAdmission
 }
