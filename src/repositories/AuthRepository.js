@@ -26,8 +26,7 @@ const createUser = async (userData) => {
         const user = new User({
             username: userData.username,
             profile: userData.profile,
-            password: await passwordHash.hashPassword(userData.password),
-            role: userData.role
+            password: await passwordHash.hashPassword(userData.password)
         });
 
         return await user.save();
