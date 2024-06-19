@@ -1,4 +1,5 @@
 const User = require('../models/UserSchema');
+const Profile = require('../models/ProfileSchema');
 const passwordHash = require("../utils/PasswordHashUtil");
 const UnauthorizedAccessError = require("../errors/UnauthorizedAccessError");
 const {filterReqObj} = require("../utils/FilterRequestUtil");
@@ -12,15 +13,79 @@ const findAllUsers = async () => {
     }
 }
 
+const findAllUsersWithPagination = async (page, size) => {
+    try {
+        const totalCount = await User.countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const users = await User.find({}).skip(skip).limit(size).populate({
+            path: 'profile',
+            select: ['fullName', 'avatar']
+        });
+        const to = skip + users.length;
+
+        return {users, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllUsersBySearchWithPagination = async (searchText, page, size) => {
+    try {
+        const profiles = await Profile.find({$text: {$search: searchText}}).select('_id');
+        const searchedProfileIds = profiles.map(profile => profile._id);
+
+        const totalCount = await User.find({
+            $or: [
+                {$text: {$search: searchText}},
+                {profile: {$in: searchedProfileIds}}
+            ]
+        }).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const users = await User.find({
+            $or: [
+                {$text: {$search: searchText}},
+                {profile: {$in: searchedProfileIds}}
+            ]
+        }).skip(skip).limit(size).populate({
+            path: 'profile',
+            select: ['fullName', 'avatar']
+        });
+        const to = skip + users.length;
+
+        return {users, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
 const findUserById = async (params) => {
     try {
-        return await User.findById(params.id);
+        return await User.findById(params.id).populate({
+            path: 'profile',
+            select: ['fullName', 'avatar']
+        });
     } catch (error) {
         throw error;
     }
 }
 
 const updateUser = async (req) => {
+    try {
+        const filterObj = filterReqObj(req.body, 'role');
+
+        return await User.findByIdAndUpdate(req.params.id, filterObj, {new: true, runValidators: true});
+    } catch (error) {
+        throw error;
+    }
+}
+
+const updateUserByAuthUser = async (req) => {
     try {
         const filterObj = filterReqObj(req.body, 'username');
 
@@ -30,7 +95,7 @@ const updateUser = async (req) => {
     }
 }
 
-const changeUserPassword = async (req) => {
+const changeUserPasswordByAuthUser = async (req) => {
     try {
         const userData = req.body;
 
@@ -58,5 +123,12 @@ const deleteUser = async (params) => {
 }
 
 module.exports = {
-    findAllUsers, findUserById, updateUser, changeUserPassword, deleteUser
+    findAllUsers,
+    findAllUsersWithPagination,
+    findAllUsersBySearchWithPagination,
+    findUserById,
+    updateUser,
+    updateUserByAuthUser,
+    changeUserPasswordByAuthUser,
+    deleteUser
 }

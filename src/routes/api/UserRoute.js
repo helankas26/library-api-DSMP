@@ -15,11 +15,18 @@ router.use(authMiddleware.verifyToken);
 
 router.route('/').get(authMiddleware.checkPermission('ADMIN'), userController.findAllUsers);
 
-router.route('/').patch(userController.updateUser);
-router.route('/changePassword').patch(userController.changePassword);
+router.route('/list')
+    .get(authMiddleware.checkPermission('ADMIN'), userController.findAllUsersWithPagination);
+
+router.route('/query')
+    .get(authMiddleware.checkPermission('ADMIN'), userController.findAllUsersBySearchWithPagination);
+
+router.route('/auth').patch(authMiddleware.checkPermission('ADMIN', 'USER'), userController.updateUserByAuthUser);
+router.route('/auth/changePassword').patch(authMiddleware.checkPermission('ADMIN', 'USER'), userController.changePasswordByAuthUser);
 
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), userController.findUserById)
+    .patch(authMiddleware.checkPermission('ADMIN'), userController.updateUser)
     .delete(authMiddleware.checkPermission('ADMIN'), userController.deleteUser);
 
 module.exports = router;

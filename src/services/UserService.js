@@ -1,12 +1,36 @@
+const crypto = require("crypto");
+
 const userRepository = require('../repositories/UserRepository');
 const PasswordDoesNotMatchError = require("../errors/PasswordDoesNotMatchError");
 const tokenGenerate = require("../utils/TokenGenerateUtil");
-const crypto = require("crypto");
 
 
 const findAllUsers = async () => {
     try {
         return await userRepository.findAllUsers();
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllUsersWithPagination = async (req) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await userRepository.findAllUsersWithPagination(page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllUsersBySearchWithPagination = async (req) => {
+    const searchText = req.query.searchText;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await userRepository.findAllUsersBySearchWithPagination(searchText, page, size);
     } catch (error) {
         throw error;
     }
@@ -28,11 +52,19 @@ const updateUser = async (req) => {
     }
 }
 
-const changeUserPassword = async (req, res) => {
+const updateUserByAuthUser = async (req) => {
+    try {
+        return await userRepository.updateUserByAuthUser(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const changeUserPasswordByAuthUser = async (req, res) => {
     try {
         if (req.body.password !== req.body.confirmPassword) throw new PasswordDoesNotMatchError('Password does not match!');
 
-        let user = await userRepository.changeUserPassword(req);
+        let user = await userRepository.changeUserPasswordByAuthUser(req);
 
         const accessToken = await tokenGenerate.getAccessToken(user);
         const refreshToken = await tokenGenerate.getRefreshToken(res, user);
@@ -58,5 +90,12 @@ const deleteUser = async (reqParams) => {
 }
 
 module.exports = {
-    findAllUsers, findUserById, updateUser, changeUserPassword, deleteUser
+    findAllUsers,
+    findAllUsersWithPagination,
+    findAllUsersBySearchWithPagination,
+    findUserById,
+    updateUser,
+    updateUserByAuthUser,
+    changeUserPasswordByAuthUser,
+    deleteUser
 }
