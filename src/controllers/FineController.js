@@ -8,6 +8,26 @@ const findAllFines = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {fines: fines, count: fines.length});
 });
 
+const findAllFinesWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const finesWithPagination = await fineService.findAllFinesWithPagination(req);
+    await sendResponse(resp, 200, finesWithPagination);
+});
+
+const findAllFinesBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const finesWithPagination = await fineService.findAllFinesBySearchWithPagination(req);
+    await sendResponse(resp, 200, finesWithPagination);
+});
+
+const findAllFinesWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const finesWithPagination = await fineService.findAllFinesWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, finesWithPagination);
+});
+
+const findAllFinesBySearchWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const finesWithPagination = await fineService.findAllFinesBySearchWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, finesWithPagination);
+});
+
 const createFine = asyncErrorHandler(async (req, resp, next) => {
     const fine = await fineService.createFine(req);
     await sendResponse(resp, 201, {fine});
@@ -15,6 +35,11 @@ const createFine = asyncErrorHandler(async (req, resp, next) => {
 
 const findFineById = asyncErrorHandler(async (req, resp, next) => {
     const fine = await fineService.findFineById(req.params);
+    await sendResponse(resp, 200, {fine});
+});
+
+const findFineByIdWithByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const fine = await fineService.findFineByIdWithByAuthUser(req);
     await sendResponse(resp, 200, {fine});
 });
 
@@ -29,5 +54,14 @@ const deleteFine = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllFines, createFine, findFineById, updateFine, deleteFine
+    findAllFines,
+    findAllFinesWithPagination,
+    findAllFinesBySearchWithPagination,
+    findAllFinesWithPaginationByAuthUser,
+    findAllFinesBySearchWithPaginationByAuthUser,
+    createFine,
+    findFineById,
+    findFineByIdWithByAuthUser,
+    updateFine,
+    deleteFine
 }

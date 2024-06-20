@@ -56,4 +56,9 @@ const fineSchema = new Schema({
     }
 });
 
+fineSchema.index({member: "text", book: "text", librarian: "text"});
+fineSchema.index({member: 1});
+fineSchema.index({book: 1});
+fineSchema.index({librarian: 1});
+
 module.exports = model('Fine', fineSchema);
