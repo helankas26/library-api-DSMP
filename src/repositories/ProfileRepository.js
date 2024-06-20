@@ -64,26 +64,30 @@ const createProfile = async (req) => {
             throw new Error("Could not create profile. Try again!");
         }
 
-        try {
-            const admission = new Admission({
-                fee: await (async () => {
-                    const config = await Config.findOne();
-                    return config.admission.fee;
-                })(),
-                member: savedProfile._id,
-                librarian: req.user.profile
-            });
+        if (savedProfile.type === 'MEMBER') {
+            try {
+                const admission = new Admission({
+                    fee: await (async () => {
+                        const config = await Config.findOne();
+                        return config.admission.fee;
+                    })(),
+                    member: savedProfile._id,
+                    librarian: req.user.profile
+                });
 
-            const savedAdmission = await admission.save();
-            if (!savedAdmission) {
-                throw new Error('Admission unpaid. Could not create profile. Try again!');
+                const savedAdmission = await admission.save();
+                if (!savedAdmission) {
+                    throw new Error('Admission unpaid. Could not create profile. Try again!');
+                }
+
+                return {savedProfile, savedAdmission};
+            } catch (error) {
+                await Profile.findByIdAndDelete(savedProfile._id);
+                throw error;
             }
-
-            return {savedProfile, savedAdmission};
-        } catch (error) {
-            await Profile.findByIdAndDelete(savedProfile._id);
-            throw error;
         }
+
+        return {savedProfile, undefined};
     } catch (error) {
         throw error;
     }
