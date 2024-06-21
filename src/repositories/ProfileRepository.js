@@ -45,6 +45,74 @@ const findAllProfilesBySearchWithPagination = async (searchText, page, size) => 
     }
 }
 
+const findAllMembersPaymentStatus = async (page, size) => {
+    try {
+        const totalCount = await Profile.find({type: 'MEMBER', paymentStatus: {$gte: 1}}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const config = await Config.findOne();
+        const subscriptionFee = config.subscription.fee;
+
+        const tempProfiles = await Profile.find({type: 'MEMBER', paymentStatus: {$gte: 1}}).select({
+            fullName: 1,
+            avatar: 1,
+            paymentStatus: 1
+        }).skip(skip).limit(size);
+        const to = skip + tempProfiles.length;
+
+        const profiles = tempProfiles.map(profile => {
+            const totalAmount = profile.paymentStatus * subscriptionFee;
+            return {
+                ...profile.toJSON(),
+                fee: subscriptionFee,
+                totalAmount: totalAmount
+            };
+        });
+
+        return {profiles, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllMembersPaymentStatusBySearch = async (searchText, page, size) => {
+    try {
+        const totalCount = await Profile.find({
+            type: 'MEMBER',
+            paymentStatus: {$gte: 1},
+            $text: {$search: searchText}
+        }).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const config = await Config.findOne();
+        const subscriptionFee = config.subscription.fee;
+
+        const tempProfiles = await Profile.find({
+            type: 'MEMBER',
+            paymentStatus: {$gte: 1},
+            $text: {$search: searchText}
+        }).select({fullName: 1, avatar: 1, paymentStatus: 1}).skip(skip).limit(size);
+        const to = skip + tempProfiles.length;
+
+        const profiles = tempProfiles.map(profile => {
+            const totalAmount = profile.paymentStatus * subscriptionFee;
+            return {
+                ...profile.toJSON(),
+                fee: subscriptionFee,
+                totalAmount: totalAmount
+            };
+        });
+
+        return {profiles, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createProfile = async (req) => {
     const profileData = req.body;
 
@@ -101,6 +169,27 @@ const findProfileById = async (params) => {
     }
 }
 
+const findMemberPaymentStatusById = async (params) => {
+    try {
+        const config = await Config.findOne();
+        const subscriptionFee = config.subscription.fee;
+
+        const tempProfile = await Profile.findById(params.id).select({fullName: 1, avatar: 1, paymentStatus: 1});
+
+        return {
+            ...tempProfile.toJSON(),
+            fee: subscriptionFee,
+            payments: Array.from({length: tempProfile.paymentStatus}, (_, index) => ({
+                index: index,
+                payFor: new Date(new Date().getFullYear(), new Date().getMonth() - (tempProfile.paymentStatus - (index + 1)))
+                    .toLocaleString('en-US', {month: 'long', year: 'numeric'})
+            }))
+        };
+    } catch (error) {
+        throw error;
+    }
+}
+
 const findProfileByAuthUser = async (req) => {
     try {
         return await Profile.findById(req.user.profile);
@@ -134,8 +223,11 @@ module.exports = {
     findAllProfiles,
     findAllProfilesWithPagination,
     findAllProfilesBySearchWithPagination,
+    findAllMembersPaymentStatus,
+    findAllMembersPaymentStatusBySearch,
     createProfile,
     findProfileById,
+    findMemberPaymentStatusById,
     findProfileByAuthUser,
     updateProfile,
     deleteProfile

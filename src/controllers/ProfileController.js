@@ -18,6 +18,16 @@ const findAllProfilesBySearchWithPagination = asyncErrorHandler(async (req, resp
     await sendResponse(resp, 200, profilesWithPagination);
 });
 
+const findAllMembersPaymentStatus = asyncErrorHandler(async (req, resp, next) => {
+    const membersPaymentStatus = await profileService.findAllMembersPaymentStatus(req);
+    await sendResponse(resp, 200, membersPaymentStatus);
+});
+
+const findAllMembersPaymentStatusBySearch = asyncErrorHandler(async (req, resp, next) => {
+    const membersPaymentStatus = await profileService.findAllMembersPaymentStatusBySearch(req);
+    await sendResponse(resp, 200, membersPaymentStatus);
+});
+
 const createProfile = asyncErrorHandler(async (req, resp, next) => {
     const profileWithAdmission = await profileService.createProfile(req);
     await sendResponse(resp, 201, profileWithAdmission);
@@ -25,6 +35,11 @@ const createProfile = asyncErrorHandler(async (req, resp, next) => {
 
 const findProfileById = asyncErrorHandler(async (req, resp, next) => {
     const profile = await profileService.findProfileById(req.params);
+    await sendResponse(resp, 200, {profile});
+});
+
+const findMemberPaymentStatusById = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.findMemberPaymentStatusById(req.params);
     await sendResponse(resp, 200, {profile});
 });
 
@@ -47,8 +62,11 @@ module.exports = {
     findAllProfiles,
     findAllProfilesWithPagination,
     findAllProfilesBySearchWithPagination,
+    findAllMembersPaymentStatus,
+    findAllMembersPaymentStatusBySearch,
     createProfile,
     findProfileById,
+    findMemberPaymentStatusById,
     findProfileByAuthUser,
     updateProfile,
     deleteProfile

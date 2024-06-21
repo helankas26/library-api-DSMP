@@ -23,6 +23,11 @@ router.route('/list')
 router.route('/query')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllProfilesBySearchWithPagination);
 
+router.route('/payment-status/list')
+    .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllMembersPaymentStatus);
+router.route('/payment-status/query')
+    .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllMembersPaymentStatusBySearch);
+
 router.route('/auth')
     .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findProfileByAuthUser);
 
@@ -30,5 +35,8 @@ router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findProfileById)
     .patch(authMiddleware.checkPermission('ADMIN'), profileController.updateProfile)
     .delete(authMiddleware.checkPermission('ADMIN'), profileController.deleteProfile);
+
+router.route('/:id/payment-status')
+    .get(authMiddleware.checkPermission('ADMIN'), profileController.findMemberPaymentStatusById);
 
 module.exports = router;

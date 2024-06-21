@@ -32,6 +32,29 @@ const findAllProfilesBySearchWithPagination = async (req) => {
     }
 }
 
+const findAllMembersPaymentStatus = async (req) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await profileRepository.findAllMembersPaymentStatus(page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllMembersPaymentStatusBySearch = async (req) => {
+    const searchText = req.query.searchText;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await profileRepository.findAllMembersPaymentStatusBySearch(searchText, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createProfile = async (req) => {
     try {
         const profileWithAdmission = await profileRepository.createProfile(req);
@@ -58,6 +81,14 @@ const createProfile = async (req) => {
 const findProfileById = async (reqParams) => {
     try {
         return await profileRepository.findProfileById(reqParams);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findMemberPaymentStatusById = async (reqParams) => {
+    try {
+        return await profileRepository.findMemberPaymentStatusById(reqParams);
     } catch (error) {
         throw error;
     }
@@ -91,8 +122,11 @@ module.exports = {
     findAllProfiles,
     findAllProfilesWithPagination,
     findAllProfilesBySearchWithPagination,
+    findAllMembersPaymentStatus,
+    findAllMembersPaymentStatusBySearch,
     createProfile,
     findProfileById,
+    findMemberPaymentStatusById,
     findProfileByAuthUser,
     updateProfile,
     deleteProfile

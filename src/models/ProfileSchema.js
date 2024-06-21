@@ -77,7 +77,7 @@ const profileSchema = new Schema({
 profileSchema.index({_id: "text", fullName: "text", email: "text", telNo: "text", address: "text"});
 
 profileSchema.pre('save', function (next) {
-    if (this.type === 'MEMBER') {
+    if (this.type === 'MEMBER' && this.isNew) {
         this.paymentStatus = 1;
     }
 
