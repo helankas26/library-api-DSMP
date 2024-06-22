@@ -40,4 +40,8 @@ const reservationSchema = new Schema({
     }
 });
 
+reservationSchema.index({book: "text", member: "text", status: "text"});
+reservationSchema.index({book: 1});
+reservationSchema.index({member: 1});
+
 module.exports = model('Reservation', reservationSchema);

@@ -17,9 +17,23 @@ router.route('/')
     .get(authMiddleware.checkPermission('ADMIN'), reservationController.findAllReservations)
     .post(authMiddleware.checkPermission('USER'), reservationController.createReservation);
 
+router.route('/list')
+    .get(authMiddleware.checkPermission('ADMIN'), reservationController.findAllReservationsWithPagination);
+
+router.route('/query')
+    .get(authMiddleware.checkPermission('ADMIN'), reservationController.findAllReservationsBySearchWithPagination);
+
+router.route('/auth/list')
+    .get(authMiddleware.checkPermission('USER'), reservationController.findAllReservationsWithPaginationByAuthUser);
+router.route('/auth/query')
+    .get(authMiddleware.checkPermission('USER'), reservationController.findAllReservationsBySearchWithPaginationByAuthUser);
+
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), reservationController.findReservationById)
     .patch(authMiddleware.checkPermission('ADMIN'), reservationController.updateReservation)
     .delete(authMiddleware.checkPermission('ADMIN'), reservationController.deleteReservation);
+
+router.route('/:id/auth')
+    .get(authMiddleware.checkPermission('USER'), reservationController.findReservationByIdWithByAuthUser);
 
 module.exports = router;

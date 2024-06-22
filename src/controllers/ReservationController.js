@@ -8,6 +8,26 @@ const findAllReservations = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {reservations: reservations, count: reservations.length});
 });
 
+const findAllReservationsWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const reservationsWithPagination = await reservationService.findAllReservationsWithPagination(req);
+    await sendResponse(resp, 200, reservationsWithPagination);
+});
+
+const findAllReservationsBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const reservationsWithPagination = await reservationService.findAllReservationsBySearchWithPagination(req);
+    await sendResponse(resp, 200, reservationsWithPagination);
+});
+
+const findAllReservationsWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const reservationsWithPagination = await reservationService.findAllReservationsWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, reservationsWithPagination);
+});
+
+const findAllReservationsBySearchWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const reservationsWithPagination = await reservationService.findAllReservationsBySearchWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, reservationsWithPagination);
+});
+
 const createReservation = asyncErrorHandler(async (req, resp, next) => {
     const reservation = await reservationService.createReservation(req);
     await sendResponse(resp, 201, {reservation});
@@ -15,6 +35,11 @@ const createReservation = asyncErrorHandler(async (req, resp, next) => {
 
 const findReservationById = asyncErrorHandler(async (req, resp, next) => {
     const reservation = await reservationService.findReservationById(req.params);
+    await sendResponse(resp, 200, {reservation});
+});
+
+const findReservationByIdWithByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const reservation = await reservationService.findReservationByIdWithByAuthUser(req);
     await sendResponse(resp, 200, {reservation});
 });
 
@@ -29,5 +54,14 @@ const deleteReservation = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllReservations, createReservation, findReservationById, updateReservation, deleteReservation
+    findAllReservations,
+    findAllReservationsWithPagination,
+    findAllReservationsBySearchWithPagination,
+    findAllReservationsWithPaginationByAuthUser,
+    findAllReservationsBySearchWithPaginationByAuthUser,
+    createReservation,
+    findReservationById,
+    findReservationByIdWithByAuthUser,
+    updateReservation,
+    deleteReservation
 }

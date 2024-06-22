@@ -228,7 +228,7 @@ const deleteSubscription = async (params) => {
         }
 
         const profile = await Profile.findById(payment.member).session(session);
-        if (!payment) {
+        if (!profile) {
             throw new Error("Member not found. Try again!");
         }
 
