@@ -125,6 +125,13 @@ const updateBook = async (params, bookData) => {
     try {
         session.startTransaction();
 
+        const book = await Book.findById(params.id).session(session);
+        if (!book) {
+            throw new Error("Book not found. Try again!");
+        }
+        const copies = bookData.noOfCopies - book.noOfCopies;
+        bookData.availableCount = book.availableCount + copies;
+
         const updatedBook = await Book.findByIdAndUpdate(params.id, bookData, {
             new: true,
             runValidators: true,
@@ -173,10 +180,34 @@ const updateBook = async (params, bookData) => {
 }
 
 const deleteBook = async (params) => {
+    const session = await mongoose.startSession();
+
     try {
-        return await Book.findByIdAndDelete(params.id);
+        session.startTransaction();
+
+        const tempBook = await Book.findById(params.id)
+            .populate({path: 'authors', select: ['name', '-books']})
+            .populate({path: 'category', select: ['categoryName', '-books']}).session(session);
+
+        const {authors, category} = tempBook;
+        await Category.findByIdAndUpdate(category._id, {$pull: {books: params.id}}, {runValidators: true}).session(session);
+
+        const authorIds = authors.map(author => author._id);
+        await Author.updateMany(
+            {_id: {$in: authorIds}},
+            {$pull: {books: params.id}},
+            {session}
+        );
+
+        const book = await Book.findByIdAndDelete(params.id).session(session);
+        
+        await session.commitTransaction();
+        return book;
     } catch (error) {
+        await session.abortTransaction();
         throw error;
+    } finally {
+        await session.endSession();
     }
 }
 

@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const Profile = require('../models/ProfileSchema');
 const User = require('../models/UserSchema');
 const idGenerate = require("../utils/IdGenerateUtil");
@@ -207,15 +209,26 @@ const updateProfile = async (params, profileData) => {
 }
 
 const deleteProfile = async (params) => {
-    try {
-        const user = await User.findOne({profile: params.id});
+    const session = await mongoose.startSession();
 
+    try {
+        session.startTransaction();
+
+        const user = await User.findOne({profile: params.id}).session(session);
         if (user) {
             throw new UnprocessableError('Could not delete. This profile associated with user account!');
         }
-        return await Profile.findByIdAndDelete(params.id);
+
+        await Admission.findOneAndDelete({member: params.id}).session(session);
+        const profile = await Profile.findByIdAndDelete(params.id).session(session);
+
+        await session.commitTransaction();
+        return profile;
     } catch (error) {
+        await session.abortTransaction();
         throw error;
+    } finally {
+        await session.endSession();
     }
 }
 

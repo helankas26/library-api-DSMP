@@ -25,7 +25,10 @@ const bookSchema = new Schema({
         required: true,
         validate: {
             validator: function (value) {
-                return value >= 0 && value <= this.noOfCopies;
+                if (this.isNew) {
+                    return value >= 0 && value <= this.noOfCopies;
+                }
+                return value >= 0;
             }
         }
     },

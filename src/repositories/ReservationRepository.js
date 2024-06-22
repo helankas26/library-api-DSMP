@@ -131,48 +131,39 @@ const createReservation = async (req) => {
 
         const reservationData = req.body;
 
+        const [profile, config, book] = await Promise.all([
+            Profile.findById(req.user.profile).session(session),
+            Config.findOne().session(session),
+            Book.findById(reservationData.book).session(session)
+        ]);
+
+        if (!profile) throw new Error("Profile not found. Reservation unsuccessful. Try again!");
+        if (!config) throw new Error("Configuration not found. Reservation unsuccessful. Try again!");
+        if (!book) throw new Error("Book not found. Reservation unsuccessful. Try again!");
+
+        if (profile.reservationCount >= config.noOfReservation.count) {
+            throw new Error("Reservation limit exceeded!");
+        }
+
+        if (book.availableCount <= 0) {
+            throw new Error("This book is not available to reserve!");
+        }
+
         const reservation = new Reservation({
             book: reservationData.book,
             member: req.user.profile
         });
 
-        const savedReservation = await reservation.save({session: session});
-        if (!savedReservation) {
-            throw new Error("Reservation unsuccessful. Try again!");
-        }
+        const savedReservation = await reservation.save({session});
+        if (!savedReservation) throw new Error("Reservation unsuccessful. Try again!");
 
-        try {
-            const profile = await Profile.findById(req.user.profile).session(session);
-            if (!profile) {
-                throw new Error("Profile not found. Reservation unsuccessful. Try again!");
-            }
+        profile.reservationCount += 1;
+        book.availableCount -= 1;
 
-            const config = await Config.findOne().session(session);
-            if (!config) {
-                throw new Error("Config not found. Reservation unsuccessful. Try again!");
-            }
-
-            if (profile.reservationCount < config.noOfReservation.count) {
-                profile.reservationCount += 1;
-                await profile.save({session: session});
-            } else {
-                throw new Error("Reservation limit exceeded!");
-            }
-
-            const book = await Book.findById(reservationData.book).session(session);
-            if (!book) {
-                throw new Error("Book not found. Reservation unsuccessful. Try again!");
-            }
-
-            if (book.availableCount > 0) {
-                book.availableCount -= 1;
-                await book.save({session: session});
-            } else {
-                throw new Error("This book is not available to reserve!");
-            }
-        } catch (error) {
-            throw error;
-        }
+        await Promise.all([
+            profile.save({session}),
+            book.save({session})
+        ]);
 
         await session.commitTransaction();
         return savedReservation;
@@ -211,19 +202,15 @@ const updateReservation = async (params, reservationData) => {
         session.startTransaction();
 
         const tempReservation = await Reservation.findById(params.id).session(session);
-        if (!tempReservation) {
-            throw new Error("Reservation not found. Try again!");
-        }
+        if (!tempReservation) throw new Error("Reservation not found. Try again!");
 
-        const profile = await Profile.findById(tempReservation.member).session(session);
-        if (!profile) {
-            throw new Error("Member not found. Try again!");
-        }
+        const [profile, book] = await Promise.all([
+            Profile.findById(tempReservation.member).session(session),
+            Book.findById(tempReservation.book).session(session)
+        ]);
 
-        const book = await Book.findById(tempReservation.book).session(session);
-        if (!book) {
-            throw new Error("Book not found. Try again!");
-        }
+        if (!profile) throw new Error("Member not found. Try again!");
+        if (!book) throw new Error("Book not found. Try again!");
 
         if (['CANCELLED', 'BORROWED', 'EXPIRED'].includes(reservationData.status)) {
             if (['CANCELLED', 'BORROWED', 'EXPIRED'].includes(tempReservation.status)) {
@@ -231,26 +218,24 @@ const updateReservation = async (params, reservationData) => {
             }
 
             profile.reservationCount -= 1;
-            await profile.save({session: session});
-
             book.availableCount += 1;
-            await book.save({session: session});
-        }
-
-        if (reservationData.status === 'RESERVED') {
+        } else if (reservationData.status === 'RESERVED') {
             if (tempReservation.status === 'RESERVED') throw new Error("Book is already reserved!");
 
             profile.reservationCount += 1;
-            await profile.save({session: session});
-
             book.availableCount -= 1;
-            await book.save({session: session});
         }
+
+        await Promise.all([
+            profile.save({session}),
+            book.save({session})
+        ]);
 
         const reservation = await Reservation.findByIdAndUpdate(params.id, reservationData, {
             new: true,
-            runValidators: true
-        }).session(session);
+            runValidators: true,
+            session: session
+        });
 
         await session.commitTransaction();
         return reservation;
@@ -269,26 +254,24 @@ const deleteReservation = async (params) => {
         session.startTransaction();
 
         const tempReservation = await Reservation.findById(params.id).session(session);
-        if (!tempReservation) {
-            throw new Error("Reservation not found. Try again!");
-        }
+        if (!tempReservation) throw new Error("Reservation not found. Try again!");
 
-        const profile = await Profile.findById(tempReservation.member).session(session);
-        if (!profile) {
-            throw new Error("Member not found. Try again!");
-        }
+        const [profile, book] = await Promise.all([
+            Profile.findById(tempReservation.member).session(session),
+            Book.findById(tempReservation.book).session(session)
+        ]);
 
-        const book = await Book.findById(tempReservation.book).session(session);
-        if (!book) {
-            throw new Error("Book not found. Try again!");
-        }
+        if (!profile) throw new Error("Member not found. Try again!");
+        if (!book) throw new Error("Book not found. Try again!");
 
         if (tempReservation.status === 'RESERVED') {
             profile.reservationCount -= 1;
-            await profile.save({session: session});
-
             book.availableCount += 1;
-            await book.save({session: session});
+
+            await Promise.all([
+                profile.save({session}),
+                book.save({session})
+            ]);
         }
 
         const reservation = await Reservation.findByIdAndDelete(params.id).session(session);
