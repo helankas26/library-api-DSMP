@@ -51,4 +51,8 @@ const subscriptionSchema = new Schema({
     },
 });
 
+subscriptionSchema.index({paidFor: "text", member: "text", librarian: "text"});
+subscriptionSchema.index({member: 1});
+subscriptionSchema.index({librarian: 1});
+
 module.exports = model('Subscription', subscriptionSchema);

@@ -8,6 +8,52 @@ const findAllSubscriptions = async () => {
     }
 }
 
+const findAllSubscriptionsWithPagination = async (req) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await subscriptionRepository.findAllSubscriptionsWithPagination(page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllSubscriptionsBySearchWithPagination = async (req) => {
+    const searchText = req.query.searchText;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await subscriptionRepository.findAllSubscriptionsBySearchWithPagination(searchText, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllSubscriptionsWithPaginationByAuthUser = async (req) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await subscriptionRepository.findAllSubscriptionsWithPaginationByAuthUser(req, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllSubscriptionsBySearchWithPaginationByAuthUser = async (req) => {
+    const searchText = req.query.searchText;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 24;
+
+    try {
+        return await subscriptionRepository.findAllSubscriptionsBySearchWithPaginationByAuthUser(req, searchText, page, size);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createSubscription = async (req) => {
     try {
         return await subscriptionRepository.createSubscription(req);
@@ -19,6 +65,14 @@ const createSubscription = async (req) => {
 const findSubscriptionById = async (reqParams) => {
     try {
         return await subscriptionRepository.findSubscriptionById(reqParams);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findSubscriptionByIdWithByAuthUser = async (req) => {
+    try {
+        return await subscriptionRepository.findSubscriptionByIdWithByAuthUser(req);
     } catch (error) {
         throw error;
     }
@@ -41,5 +95,14 @@ const deleteSubscription = async (reqParams) => {
 }
 
 module.exports = {
-    findAllSubscriptions, createSubscription, findSubscriptionById, updateSubscription, deleteSubscription
+    findAllSubscriptions,
+    findAllSubscriptionsWithPagination,
+    findAllSubscriptionsBySearchWithPagination,
+    findAllSubscriptionsWithPaginationByAuthUser,
+    findAllSubscriptionsBySearchWithPaginationByAuthUser,
+    createSubscription,
+    findSubscriptionById,
+    findSubscriptionByIdWithByAuthUser,
+    updateSubscription,
+    deleteSubscription
 }

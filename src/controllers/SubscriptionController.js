@@ -8,6 +8,26 @@ const findAllSubscriptions = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {subscriptions: subscriptions, count: subscriptions.length});
 });
 
+const findAllSubscriptionsWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const subscriptionsWithPagination = await subscriptionService.findAllSubscriptionsWithPagination(req);
+    await sendResponse(resp, 200, subscriptionsWithPagination);
+});
+
+const findAllSubscriptionsBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const subscriptionsWithPagination = await subscriptionService.findAllSubscriptionsBySearchWithPagination(req);
+    await sendResponse(resp, 200, subscriptionsWithPagination);
+});
+
+const findAllSubscriptionsWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const subscriptionsWithPagination = await subscriptionService.findAllSubscriptionsWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, subscriptionsWithPagination);
+});
+
+const findAllSubscriptionsBySearchWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const subscriptionsWithPagination = await subscriptionService.findAllSubscriptionsBySearchWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, subscriptionsWithPagination);
+});
+
 const createSubscription = asyncErrorHandler(async (req, resp, next) => {
     const subscription = await subscriptionService.createSubscription(req);
     await sendResponse(resp, 201, {subscription});
@@ -15,6 +35,11 @@ const createSubscription = asyncErrorHandler(async (req, resp, next) => {
 
 const findSubscriptionById = asyncErrorHandler(async (req, resp, next) => {
     const subscription = await subscriptionService.findSubscriptionById(req.params);
+    await sendResponse(resp, 200, {subscription});
+});
+
+const findSubscriptionByIdWithByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const subscription = await subscriptionService.findSubscriptionByIdWithByAuthUser(req);
     await sendResponse(resp, 200, {subscription});
 });
 
@@ -29,5 +54,14 @@ const deleteSubscription = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllSubscriptions, createSubscription, findSubscriptionById, updateSubscription, deleteSubscription
+    findAllSubscriptions,
+    findAllSubscriptionsWithPagination,
+    findAllSubscriptionsBySearchWithPagination,
+    findAllSubscriptionsWithPaginationByAuthUser,
+    findAllSubscriptionsBySearchWithPaginationByAuthUser,
+    createSubscription,
+    findSubscriptionById,
+    findSubscriptionByIdWithByAuthUser,
+    updateSubscription,
+    deleteSubscription
 }
