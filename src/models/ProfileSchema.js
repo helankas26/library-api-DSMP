@@ -72,9 +72,24 @@ const profileSchema = new Schema({
         default: () => Date.now(),
         immutable: true
     }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
 });
 
 profileSchema.index({_id: "text", fullName: "text", email: "text", telNo: "text", address: "text"});
+
+profileSchema.virtual('transactions', {
+    ref: 'Transaction',
+    localField: '_id',
+    foreignField: 'member'
+});
+
+profileSchema.virtual('reservations', {
+    ref: 'Reservation',
+    localField: '_id',
+    foreignField: 'member'
+});
 
 profileSchema.pre('save', function (next) {
     if (this.type === 'MEMBER' && this.isNew) {

@@ -8,6 +8,11 @@ const findAllProfiles = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {profiles: profiles, count: profiles.length});
 });
 
+const findAllMembers = asyncErrorHandler(async (req, resp, next) => {
+    const profiles = await profileService.findAllMembers();
+    await sendResponse(resp, 200, {profiles: profiles, count: profiles.length});
+});
+
 const findAllProfilesWithPagination = asyncErrorHandler(async (req, resp, next) => {
     const profilesWithPagination = await profileService.findAllProfilesWithPagination(req);
     await sendResponse(resp, 200, profilesWithPagination);
@@ -48,6 +53,16 @@ const findProfileByAuthUser = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {profile});
 });
 
+const getMemberCurrentLoansById = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.getMemberCurrentLoansById(req.params);
+    await sendResponse(resp, 200, {profile});
+});
+
+const getMemberAvailableReservationsById = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.getMemberAvailableReservationsById(req.params);
+    await sendResponse(resp, 200, {profile});
+});
+
 const updateProfile = asyncErrorHandler(async (req, resp, next) => {
     const profile = await profileService.updateProfile(req.params, req.body);
     await sendResponse(resp, 201, {profile});
@@ -60,6 +75,7 @@ const deleteProfile = asyncErrorHandler(async (req, resp, next) => {
 
 module.exports = {
     findAllProfiles,
+    findAllMembers,
     findAllProfilesWithPagination,
     findAllProfilesBySearchWithPagination,
     findAllMembersPaymentStatus,
@@ -68,6 +84,8 @@ module.exports = {
     findProfileById,
     findMemberPaymentStatusById,
     findProfileByAuthUser,
+    getMemberCurrentLoansById,
+    getMemberAvailableReservationsById,
     updateProfile,
     deleteProfile
 }

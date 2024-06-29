@@ -17,6 +17,9 @@ router.route('/')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllProfiles)
     .post(authMiddleware.checkPermission('ADMIN'), profileController.createProfile);
 
+router.route('/members')
+    .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllMembers);
+
 router.route('/list')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllProfilesWithPagination);
 
@@ -38,5 +41,11 @@ router.route('/:id')
 
 router.route('/:id/payment-status')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findMemberPaymentStatusById);
+
+router.route('/:id/transactions')
+    .get(authMiddleware.checkPermission('ADMIN'), profileController.getMemberCurrentLoansById);
+
+router.route('/:id/reservations')
+    .get(authMiddleware.checkPermission('ADMIN'), profileController.getMemberAvailableReservationsById);
 
 module.exports = router;

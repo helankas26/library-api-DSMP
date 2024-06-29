@@ -9,6 +9,14 @@ const findAllProfiles = async () => {
     }
 }
 
+const findAllMembers = async () => {
+    try {
+        return await profileRepository.findAllMembers();
+    } catch (error) {
+        throw error;
+    }
+}
+
 const findAllProfilesWithPagination = async (req) => {
     const page = parseInt(req.query.page) || 1;
     const size = parseInt(req.query.size) || 24;
@@ -102,6 +110,22 @@ const findProfileByAuthUser = async (req) => {
     }
 }
 
+const getMemberCurrentLoansById = async (reqParams) => {
+    try {
+        return await profileRepository.getMemberCurrentLoansById(reqParams);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getMemberAvailableReservationsById = async (reqParams) => {
+    try {
+        return await profileRepository.getMemberAvailableReservationsById(reqParams);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateProfile = async (reqParams, reqBody) => {
     try {
         return await profileRepository.updateProfile(reqParams, reqBody);
@@ -120,6 +144,7 @@ const deleteProfile = async (reqParams) => {
 
 module.exports = {
     findAllProfiles,
+    findAllMembers,
     findAllProfilesWithPagination,
     findAllProfilesBySearchWithPagination,
     findAllMembersPaymentStatus,
@@ -128,6 +153,8 @@ module.exports = {
     findProfileById,
     findMemberPaymentStatusById,
     findProfileByAuthUser,
+    getMemberCurrentLoansById,
+    getMemberAvailableReservationsById,
     updateProfile,
     deleteProfile
 }

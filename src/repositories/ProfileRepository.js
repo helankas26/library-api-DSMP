@@ -15,6 +15,15 @@ const findAllProfiles = async () => {
     }
 }
 
+const findAllMembers = async () => {
+    try {
+        return await Profile.find({type: 'MEMBER'})
+            .select(['-email', '-telNo', '-address', '-createdAt']);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const findAllProfilesWithPagination = async (page, size) => {
     try {
         const totalCount = await Profile.countDocuments();
@@ -200,6 +209,35 @@ const findProfileByAuthUser = async (req) => {
     }
 }
 
+const getMemberCurrentLoansById = async (params) => {
+    try {
+        return await Profile.findById(params.id)
+            .select(['-avatar', '-email', '-telNo', '-address', '-createdAt'])
+            .populate({
+                path: 'transactions',
+                match: {status: {$in: ['BORROWED', 'OVERDUE']}},
+                select: ['-librarian'],
+                populate: {path: 'books', model: 'Book', select: ['-cover', '-description', '-createdAt']}
+            });
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getMemberAvailableReservationsById = async (params) => {
+    try {
+        return await Profile.findById(params.id)
+            .select(['-avatar', '-email', '-telNo', '-address', '-createdAt'])
+            .populate({
+                path: 'reservations',
+                match: {status: {$in: ['RESERVED']}},
+                populate: {path: 'book', model: 'Book', select: ['-cover', '-description', '-createdAt']}
+            });
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateProfile = async (params, profileData) => {
     try {
         return await Profile.findByIdAndUpdate(params.id, profileData, {new: true, runValidators: true});
@@ -234,6 +272,7 @@ const deleteProfile = async (params) => {
 
 module.exports = {
     findAllProfiles,
+    findAllMembers,
     findAllProfilesWithPagination,
     findAllProfilesBySearchWithPagination,
     findAllMembersPaymentStatus,
@@ -242,6 +281,8 @@ module.exports = {
     findProfileById,
     findMemberPaymentStatusById,
     findProfileByAuthUser,
+    getMemberCurrentLoansById,
+    getMemberAvailableReservationsById,
     updateProfile,
     deleteProfile
 }
