@@ -18,6 +18,11 @@ const findConfigById = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {config});
 });
 
+const getConfig = asyncErrorHandler(async (req, resp, next) => {
+    const config = await configService.getConfig();
+    await sendResponse(resp, 200, {config});
+});
+
 const updateConfig = asyncErrorHandler(async (req, resp, next) => {
     const config = await configService.updateConfig(req.params, req);
     await sendResponse(resp, 201, {config});
@@ -29,5 +34,5 @@ const deleteConfig = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllConfigs, createConfig, findConfigById, updateConfig, deleteConfig
+    findAllConfigs, createConfig, findConfigById, getConfig, updateConfig, deleteConfig
 }

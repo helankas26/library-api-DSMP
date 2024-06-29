@@ -17,6 +17,9 @@ router.route('/')
     .get(configController.findAllConfigs)
     .post(configController.createConfig);
 
+router.route('/config')
+    .get(configController.getConfig);
+
 router.route('/:id')
     .get(configController.findConfigById)
     .patch(configController.updateConfig)

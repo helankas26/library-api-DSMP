@@ -24,6 +24,14 @@ const findConfigById = async (reqParams) => {
     }
 }
 
+const getConfig = async () => {
+    try {
+        return await configRepository.getConfig();
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateConfig = async (reqParams, req) => {
     try {
         return await configRepository.updateConfig(reqParams, req);
@@ -41,5 +49,5 @@ const deleteConfig = async (reqParams) => {
 }
 
 module.exports = {
-    findAllConfigs, createConfig, findConfigById, updateConfig, deleteConfig
+    findAllConfigs, createConfig, findConfigById, getConfig, updateConfig, deleteConfig
 }
