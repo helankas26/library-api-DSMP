@@ -58,4 +58,8 @@ bookSchema.virtual('category', {
     justOne: true
 });
 
+bookSchema.virtual('name').get(function () {
+    return this.edition ? `${this.title} (${this.edition})` : this.title;
+});
+
 module.exports = model('Book', bookSchema);
