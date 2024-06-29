@@ -1,6 +1,9 @@
+const mongoose = require("mongoose");
+
 const Fine = require('../models/FineSchema');
 const Profile = require('../models/ProfileSchema');
 const Book = require('../models/BookSchema');
+const transactionUtils = require("../utils/TransactionUtils");
 
 const findAllFines = async () => {
     try {
@@ -125,20 +128,26 @@ const findAllFinesBySearchWithPaginationByAuthUser = async (req, searchText, pag
 }
 
 const createFine = async (req) => {
-    try {
-        const fineData = req.body;
+    const session = await mongoose.startSession();
 
-        const fine = new Fine({
-            fee: fineData.fee,
-            member: fineData.member,
-            book: fineData.book,
-            noOfDate: fineData.noOfDate,
-            librarian: req.user.profile
+    try {
+        session.startTransaction();
+
+        const {fines, transactionId} = req.body;
+        const finesData = fines.map((fine) => {
+            return {...fine, librarian: req.user.profile}
         });
 
-        return await fine.save();
+        await transactionUtils.executeTransactionUpdate(transactionId, {status: 'RETURNED'}, req.user.profile, session);
+        const fine = await Fine.create(finesData, {session: session});
+
+        await session.commitTransaction();
+        return fine;
     } catch (error) {
+        await session.abortTransaction();
         throw error;
+    } finally {
+        await session.endSession();
     }
 }
 

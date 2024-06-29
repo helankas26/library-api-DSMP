@@ -29,8 +29,8 @@ const findAllFinesBySearchWithPaginationByAuthUser = asyncErrorHandler(async (re
 });
 
 const createFine = asyncErrorHandler(async (req, resp, next) => {
-    const fine = await fineService.createFine(req);
-    await sendResponse(resp, 201, {fine});
+    const fines = await fineService.createFine(req);
+    await sendResponse(resp, 201, {fines});
 });
 
 const findFineById = asyncErrorHandler(async (req, resp, next) => {
