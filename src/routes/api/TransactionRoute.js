@@ -22,4 +22,7 @@ router.route('/:id')
     .patch(authMiddleware.checkPermission('ADMIN'), transactionController.updateTransaction)
     .delete(authMiddleware.checkPermission('ADMIN'), transactionController.deleteTransaction);
 
+router.route('/:id/fines')
+    .get(authMiddleware.checkPermission('ADMIN'), transactionController.getTransactionFineDetailsById);
+
 module.exports = router;

@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose');
+
 const Profile = require('./ProfileSchema');
 
 const transactionSchema = new Schema({
@@ -51,6 +52,19 @@ const transactionSchema = new Schema({
     },
     returnedAt: {
         type: Date
+    }
+}, {
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+});
+
+transactionSchema.virtual('noOfDate').get(function () {
+    const today = new Date();
+    const dueDate = new Date(this.dueAt);
+
+    if (['BORROWED', 'OVERDUE'].includes(this.status) && today > dueDate) {
+        const delay = Math.ceil((today - dueDate) / (24 * 60 * 60 * 1000));
+        return Math.max(0, delay);
     }
 });
 

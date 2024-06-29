@@ -18,6 +18,11 @@ const findTransactionById = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {transaction});
 });
 
+const getTransactionFineDetailsById = asyncErrorHandler(async (req, resp, next) => {
+    const transaction = await transactionService.getTransactionFineDetailsById(req.params);
+    await sendResponse(resp, 200, {transaction});
+});
+
 const updateTransaction = asyncErrorHandler(async (req, resp, next) => {
     const transaction = await transactionService.updateTransaction(req.params, req);
     await sendResponse(resp, 201, {transaction});
@@ -29,5 +34,10 @@ const deleteTransaction = asyncErrorHandler(async (req, resp, next) => {
 });
 
 module.exports = {
-    findAllTransactions, createTransaction, findTransactionById, updateTransaction, deleteTransaction
+    findAllTransactions,
+    createTransaction,
+    findTransactionById,
+    getTransactionFineDetailsById,
+    updateTransaction,
+    deleteTransaction
 }

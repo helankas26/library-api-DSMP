@@ -24,6 +24,14 @@ const findTransactionById = async (reqParams) => {
     }
 }
 
+const getTransactionFineDetailsById = async (reqParams) => {
+    try {
+        return await transactionRepository.getTransactionFineDetailsById(reqParams);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateTransaction = async (reqParams, req) => {
     try {
         return await transactionRepository.updateTransaction(reqParams, req);
@@ -41,5 +49,10 @@ const deleteTransaction = async (reqParams) => {
 }
 
 module.exports = {
-    findAllTransactions, createTransaction, findTransactionById, updateTransaction, deleteTransaction
+    findAllTransactions,
+    createTransaction,
+    findTransactionById,
+    getTransactionFineDetailsById,
+    updateTransaction,
+    deleteTransaction
 }
