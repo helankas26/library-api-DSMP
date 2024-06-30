@@ -8,6 +8,26 @@ const findAllTransactions = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {transactions: transactions, count: transactions.length});
 });
 
+const findAllTransactionsWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const transactionsWithPagination = await transactionService.findAllTransactionsWithPagination(req);
+    await sendResponse(resp, 200, transactionsWithPagination);
+});
+
+const findAllTransactionsBySearchWithPagination = asyncErrorHandler(async (req, resp, next) => {
+    const transactionsWithPagination = await transactionService.findAllTransactionsBySearchWithPagination(req);
+    await sendResponse(resp, 200, transactionsWithPagination);
+});
+
+const findAllTransactionsWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const transactionsWithPagination = await transactionService.findAllTransactionsWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, transactionsWithPagination);
+});
+
+const findAllTransactionsBySearchWithPaginationByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const transactionsWithPagination = await transactionService.findAllTransactionsBySearchWithPaginationByAuthUser(req);
+    await sendResponse(resp, 200, transactionsWithPagination);
+});
+
 const createTransaction = asyncErrorHandler(async (req, resp, next) => {
     const transaction = await transactionService.createTransaction(req);
     await sendResponse(resp, 201, {transaction});
@@ -15,6 +35,11 @@ const createTransaction = asyncErrorHandler(async (req, resp, next) => {
 
 const findTransactionById = asyncErrorHandler(async (req, resp, next) => {
     const transaction = await transactionService.findTransactionById(req.params);
+    await sendResponse(resp, 200, {transaction});
+});
+
+const findTransactionByIdWithByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const transaction = await transactionService.findTransactionByIdWithByAuthUser(req);
     await sendResponse(resp, 200, {transaction});
 });
 
@@ -35,8 +60,13 @@ const deleteTransaction = asyncErrorHandler(async (req, resp, next) => {
 
 module.exports = {
     findAllTransactions,
+    findAllTransactionsWithPagination,
+    findAllTransactionsBySearchWithPagination,
+    findAllTransactionsWithPaginationByAuthUser,
+    findAllTransactionsBySearchWithPaginationByAuthUser,
     createTransaction,
     findTransactionById,
+    findTransactionByIdWithByAuthUser,
     getTransactionFineDetailsById,
     updateTransaction,
     deleteTransaction

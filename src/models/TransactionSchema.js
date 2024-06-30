@@ -58,6 +58,11 @@ const transactionSchema = new Schema({
     toObject: {virtuals: true}
 });
 
+transactionSchema.index({books: "text", member: "text", status: "text", librarian: "text"});
+transactionSchema.index({books: 1});
+transactionSchema.index({member: 1});
+transactionSchema.index({librarian: 1});
+
 transactionSchema.virtual('noOfDate').get(function () {
     const today = new Date();
     const dueDate = new Date(this.dueAt);

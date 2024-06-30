@@ -14,6 +14,72 @@ const findAllTransactions = async () => {
     }
 }
 
+const findAllTransactionsWithPagination = async (page, size) => {
+    try {
+        const totalCount = await Transaction.countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const transactions = await Transaction.find({}).skip(skip).limit(size)
+            .populate({path: 'books', select: ['title', 'edition', 'name']})
+            .populate({path: 'member', select: ['fullName']})
+            .populate({path: 'librarian', select: ['fullName']});
+        const to = skip + transactions.length;
+
+        return {transactions, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllTransactionsBySearchWithPagination = async (searchText, page, size) => {
+    try {
+        const profiles = await Profile.find({$text: {$search: searchText}}).select('_id');
+        const searchedProfileIds = profiles.map(profile => profile._id);
+
+        const books = await Book.find({$text: {$search: searchText}}).select('_id');
+        const searchedBookIds = books.map(book => book._id);
+
+        const totalCount = await Transaction.find({
+            $or: [
+                {$text: {$search: searchText}},
+                {books: {$in: searchedBookIds}},
+                {member: {$in: searchedProfileIds}},
+                {librarian: {$in: searchedProfileIds}}
+            ]
+        }).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const transactions = await Transaction.find({
+            $or: [
+                {$text: {$search: searchText}},
+                {books: {$in: searchedBookIds}},
+                {member: {$in: searchedProfileIds}},
+                {librarian: {$in: searchedProfileIds}}
+            ]
+        }).skip(skip).limit(size)
+            .populate({path: 'books', select: ['title', 'edition', 'name']})
+            .populate({path: 'member', select: ['fullName']})
+            .populate({path: 'librarian', select: ['fullName']});
+        const to = skip + transactions.length;
+
+        return {transactions, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findAllTransactionsWithPaginationByAuthUser = async (req, page, size) => {
+    return "not implemented"
+}
+
+const findAllTransactionsBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
+    return "not implemented"
+}
+
 const createTransaction = async (req) => {
     const session = await mongoose.startSession();
 
@@ -69,7 +135,21 @@ const createTransaction = async (req) => {
 
 const findTransactionById = async (params) => {
     try {
-        return await Transaction.findById(params.id);
+        return await Transaction.findById(params.id)
+            .populate({path: 'books', select: ['title', 'edition']})
+            .populate({path: 'member', select: ['fullName', 'avatar']})
+            .populate({path: 'librarian', select: ['fullName']});
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findTransactionByIdWithByAuthUser = async (req) => {
+    try {
+        return await Transaction.findOne({_id: req.params.id, member: req.user.profile})
+            .populate({path: 'books', select: ['title', 'edition']})
+            .populate({path: 'member', select: ['fullName', 'avatar']})
+            .populate({path: 'librarian', select: ['fullName']});
     } catch (error) {
         throw error;
     }
@@ -170,8 +250,13 @@ const deleteTransaction = async (params) => {
 
 module.exports = {
     findAllTransactions,
+    findAllTransactionsWithPagination,
+    findAllTransactionsBySearchWithPagination,
+    findAllTransactionsWithPaginationByAuthUser,
+    findAllTransactionsBySearchWithPaginationByAuthUser,
     createTransaction,
     findTransactionById,
+    findTransactionByIdWithByAuthUser,
     getTransactionFineDetailsById,
     updateTransaction,
     deleteTransaction
