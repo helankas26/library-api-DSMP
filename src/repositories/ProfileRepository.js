@@ -31,7 +31,7 @@ const findAllProfilesWithPagination = async (page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const profiles = await Profile.find({}).skip(skip).limit(size);
+        const profiles = await Profile.find({}).sort({createdAt: 'desc'}).skip(skip).limit(size);
         const to = skip + profiles.length;
 
         return {profiles, totalCount, totalPages, from, to};

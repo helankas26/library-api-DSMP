@@ -20,7 +20,7 @@ const findAllReservationsWithPagination = async (page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const reservations = await Reservation.find({}).skip(skip).limit(size)
+        const reservations = await Reservation.find({}).sort({reservationAt: 'desc'}).skip(skip).limit(size)
             .populate({path: 'book', select: ['title', 'edition']})
             .populate({path: 'member', select: ['fullName']});
         const to = skip + reservations.length;
@@ -69,58 +69,10 @@ const findAllReservationsBySearchWithPagination = async (searchText, page, size)
 
 const findAllReservationsWithPaginationByAuthUser = async (req, page, size) => {
     return "not implemented"
-    /*try {
-        const totalCount = await Reservation.countDocuments();
-        const totalPages = Math.ceil(totalCount / size);
-        const skip = (page - 1) * size;
-        const from = skip + 1;
-
-        const reservations = await Reservation.find({}).skip(skip).limit(size)
-            .populate({path: 'member', select: ['fullName', 'avatar']})
-            .populate({path: 'librarian', select: ['fullName']});
-        const to = skip + reservations.length;
-
-        return {reservations, totalCount, totalPages, from, to};
-    } catch (error) {
-        throw error;
-    }*/
 }
 
 const findAllReservationsBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
     return "not implemented"
-    /*try {
-        const profiles = await Profile.find({$text: {$search: searchText}}).select('_id');
-        const searchedProfileIds = profiles.map(profile => profile._id);
-
-        const books = await Book.find({$text: {$search: searchText}}).select('_id');
-        const searchedBookIds = books.map(book => book._id);
-
-        const totalCount = await Reservation.find({
-            $or: [
-                {$text: {$search: searchText}},
-                {member: {$in: searchedProfileIds}},
-                {librarian: {$in: searchedProfileIds}}
-            ]
-        }).countDocuments();
-        const totalPages = Math.ceil(totalCount / size);
-        const skip = (page - 1) * size;
-        const from = skip + 1;
-
-        const reservations = await Reservation.find({
-            $or: [
-                {$text: {$search: searchText}},
-                {member: {$in: searchedProfileIds}},
-                {librarian: {$in: searchedProfileIds}}
-            ]
-        }).skip(skip).limit(size)
-            .populate({path: 'member', select: ['fullName', 'avatar']})
-            .populate({path: 'librarian', select: ['fullName']});
-        const to = skip + reservations.length;
-
-        return {reservations, totalCount, totalPages, from, to};
-    } catch (error) {
-        throw error;
-    }*/
 }
 
 const createReservation = async (req) => {

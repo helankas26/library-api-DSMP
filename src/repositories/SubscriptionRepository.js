@@ -19,7 +19,7 @@ const findAllSubscriptionsWithPagination = async (page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const subscriptions = await Subscription.find({}).skip(skip).limit(size)
+        const subscriptions = await Subscription.find({}).sort({paidAt: 'desc'}).skip(skip).limit(size)
             .populate({path: 'member', select: ['fullName']})
             .populate({path: 'librarian', select: ['fullName']});
         const to = skip + subscriptions.length;
@@ -65,58 +65,10 @@ const findAllSubscriptionsBySearchWithPagination = async (searchText, page, size
 
 const findAllSubscriptionsWithPaginationByAuthUser = async (req, page, size) => {
     return "not implemented"
-    /*try {
-        const totalCount = await Subscription.countDocuments();
-        const totalPages = Math.ceil(totalCount / size);
-        const skip = (page - 1) * size;
-        const from = skip + 1;
-
-        const subscriptions = await Subscription.find({}).skip(skip).limit(size)
-            .populate({path: 'member', select: ['fullName', 'avatar']})
-            .populate({path: 'librarian', select: ['fullName']});
-        const to = skip + subscriptions.length;
-
-        return {subscriptions, totalCount, totalPages, from, to};
-    } catch (error) {
-        throw error;
-    }*/
 }
 
 const findAllSubscriptionsBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
     return "not implemented"
-    /*try {
-        const profiles = await Profile.find({$text: {$search: searchText}}).select('_id');
-        const searchedProfileIds = profiles.map(profile => profile._id);
-
-        const books = await Book.find({$text: {$search: searchText}}).select('_id');
-        const searchedBookIds = books.map(book => book._id);
-
-        const totalCount = await Subscription.find({
-            $or: [
-                {$text: {$search: searchText}},
-                {member: {$in: searchedProfileIds}},
-                {librarian: {$in: searchedProfileIds}}
-            ]
-        }).countDocuments();
-        const totalPages = Math.ceil(totalCount / size);
-        const skip = (page - 1) * size;
-        const from = skip + 1;
-
-        const subscriptions = await Subscription.find({
-            $or: [
-                {$text: {$search: searchText}},
-                {member: {$in: searchedProfileIds}},
-                {librarian: {$in: searchedProfileIds}}
-            ]
-        }).skip(skip).limit(size)
-            .populate({path: 'member', select: ['fullName', 'avatar']})
-            .populate({path: 'librarian', select: ['fullName']});
-        const to = skip + subscriptions.length;
-
-        return {subscriptions, totalCount, totalPages, from, to};
-    } catch (error) {
-        throw error;
-    }*/
 }
 
 const createSubscription = async (req) => {

@@ -20,7 +20,7 @@ const findAllFinesWithPagination = async (page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const fines = await Fine.find({}).skip(skip).limit(size)
+        const fines = await Fine.find({}).sort({createdAt: 'desc'}).skip(skip).limit(size)
             .populate({path: 'member', select: ['fullName']})
             .populate({path: 'book', select: ['title', 'edition']})
             .populate({path: 'librarian', select: ['fullName']});
@@ -73,58 +73,10 @@ const findAllFinesBySearchWithPagination = async (searchText, page, size) => {
 
 const findAllFinesWithPaginationByAuthUser = async (req, page, size) => {
     return "not implemented"
-    /*try {
-        const totalCount = await Fine.countDocuments();
-        const totalPages = Math.ceil(totalCount / size);
-        const skip = (page - 1) * size;
-        const from = skip + 1;
-
-        const fines = await Fine.find({}).skip(skip).limit(size)
-            .populate({path: 'member', select: ['fullName', 'avatar']})
-            .populate({path: 'librarian', select: ['fullName']});
-        const to = skip + fines.length;
-
-        return {fines, totalCount, totalPages, from, to};
-    } catch (error) {
-        throw error;
-    }*/
 }
 
 const findAllFinesBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
     return "not implemented"
-    /*try {
-        const profiles = await Profile.find({$text: {$search: searchText}}).select('_id');
-        const searchedProfileIds = profiles.map(profile => profile._id);
-
-        const books = await Book.find({$text: {$search: searchText}}).select('_id');
-        const searchedBookIds = books.map(book => book._id);
-
-        const totalCount = await Fine.find({
-            $or: [
-                {$text: {$search: searchText}},
-                {member: {$in: searchedProfileIds}},
-                {librarian: {$in: searchedProfileIds}}
-            ]
-        }).countDocuments();
-        const totalPages = Math.ceil(totalCount / size);
-        const skip = (page - 1) * size;
-        const from = skip + 1;
-
-        const admissions = await Fine.find({
-            $or: [
-                {$text: {$search: searchText}},
-                {member: {$in: searchedProfileIds}},
-                {librarian: {$in: searchedProfileIds}}
-            ]
-        }).skip(skip).limit(size)
-            .populate({path: 'member', select: ['fullName', 'avatar']})
-            .populate({path: 'librarian', select: ['fullName']});
-        const to = skip + admissions.length;
-
-        return {admissions, totalCount, totalPages, from, to};
-    } catch (error) {
-        throw error;
-    }*/
 }
 
 const createFine = async (req) => {

@@ -21,7 +21,7 @@ const findAllTransactionsWithPagination = async (page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const transactions = await Transaction.find({}).skip(skip).limit(size)
+        const transactions = await Transaction.find({}).sort({issuedAt: 'desc'}).skip(skip).limit(size)
             .populate({path: 'books', select: ['title', 'edition', 'name']})
             .populate({path: 'member', select: ['fullName']})
             .populate({path: 'librarian', select: ['fullName']});

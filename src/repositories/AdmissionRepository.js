@@ -18,7 +18,7 @@ const findAllAdmissionsWithPagination = async (page, size) => {
         const skip = (page - 1) * size;
         const from = skip + 1;
 
-        const admissions = await Admission.find({}).skip(skip).limit(size)
+        const admissions = await Admission.find({}).sort({createdAt: 'desc'}).skip(skip).limit(size)
             .populate({path: 'member', select: ['fullName', 'avatar']})
             .populate({path: 'librarian', select: ['fullName']});
         const to = skip + admissions.length;
