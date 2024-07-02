@@ -83,12 +83,18 @@ const createReservation = async (req) => {
 
         const reservationData = req.body;
 
-        const [profile, config, book] = await Promise.all([
+        const [reservationExist, profile, config, book] = await Promise.all([
+            Reservation.findOne({
+                book: reservationData.book,
+                member: req.user.profile,
+                status: 'RESERVED'
+            }).session(session),
             Profile.findById(req.user.profile).session(session),
             Config.findOne().session(session),
             Book.findById(reservationData.book).session(session)
         ]);
 
+        if (reservationExist) throw new Error("You have already reserved this book!");
         if (!profile) throw new Error("Profile not found. Reservation unsuccessful. Try again!");
         if (!config) throw new Error("Configuration not found. Reservation unsuccessful. Try again!");
         if (!book) throw new Error("Book not found. Reservation unsuccessful. Try again!");
