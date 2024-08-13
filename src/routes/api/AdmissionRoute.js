@@ -18,10 +18,10 @@ router.route('/')
     .post(admissionController.createAdmission);
 
 router.route('/list')
-    .get(authMiddleware.checkPermission('ADMIN'), admissionController.findAllAdmissionsWithPagination);
+    .get(admissionController.findAllAdmissionsWithPagination);
 
 router.route('/query')
-    .get(authMiddleware.checkPermission('ADMIN'), admissionController.findAllAdmissionsBySearchWithPagination);
+    .get(admissionController.findAllAdmissionsBySearchWithPagination);
 
 router.route('/:id')
     .get(admissionController.findAdmissionById)

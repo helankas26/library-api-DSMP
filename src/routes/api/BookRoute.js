@@ -12,7 +12,7 @@ router.param('id', async (req, res, next, value) => {
 });
 
 router.route('/')
-    .get(bookController.findAllBooks)
+    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.findAllBooks)
     .post(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.createBook);
 
 router.route('/list')
@@ -22,7 +22,7 @@ router.route('/query')
     .get(bookController.findAllBooksBySearchWithPagination);
 
 router.route('/:id')
-    .get(authMiddleware.verifyToken, bookController.findBookById)
+    .get(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN', 'USER'), bookController.findBookById)
     .patch(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.updateBook)
     .delete(authMiddleware.verifyToken, authMiddleware.checkPermission('ADMIN'), bookController.deleteBook);
 
