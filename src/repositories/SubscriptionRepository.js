@@ -5,6 +5,7 @@ const Config = require("../models/ConfigSchema");
 const Profile = require("../models/ProfileSchema");
 const ConflictError = require("../errors/ConflictError");
 const NotFoundError = require("../errors/NotFoundError");
+const ForbiddenRequestError = require("../errors/ForbiddenRequestError");
 
 const findAllSubscriptions = async () => {
     try {
@@ -144,9 +145,13 @@ const findSubscriptionById = async (params) => {
 
 const findSubscriptionByIdWithByAuthUser = async (req) => {
     try {
-        return await Subscription.findOne({_id: req.params.id, member: req.user.profile})
+        const subscription = await Subscription.findOne({_id: req.params.id, member: req.user.profile})
             .populate({path: 'member', select: ['fullName', 'avatar']})
             .populate({path: 'librarian', select: ['fullName']});
+
+        if (!subscription) throw new ForbiddenRequestError("You do not have access rights to the content!");
+
+        return subscription;
     } catch (error) {
         throw error;
     }

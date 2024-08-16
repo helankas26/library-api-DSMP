@@ -7,6 +7,7 @@ const Book = require("../models/BookSchema");
 const transactionUtils = require("../utils/TransactionUtils");
 const NotFoundError = require("../errors/NotFoundError");
 const ConflictError = require("../errors/ConflictError");
+const ForbiddenRequestError = require("../errors/ForbiddenRequestError");
 
 const findAllTransactions = async () => {
     try {
@@ -148,10 +149,14 @@ const findTransactionById = async (params) => {
 
 const findTransactionByIdWithByAuthUser = async (req) => {
     try {
-        return await Transaction.findOne({_id: req.params.id, member: req.user.profile})
+        const transaction = await Transaction.findOne({_id: req.params.id, member: req.user.profile})
             .populate({path: 'books', select: ['title', 'edition']})
             .populate({path: 'member', select: ['fullName', 'avatar']})
             .populate({path: 'librarian', select: ['fullName']});
+
+        if (!transaction) throw new ForbiddenRequestError("You do not have access rights to the content!");
+
+        return transaction;
     } catch (error) {
         throw error;
     }

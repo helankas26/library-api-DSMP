@@ -4,6 +4,7 @@ const Fine = require('../models/FineSchema');
 const Profile = require('../models/ProfileSchema');
 const Book = require('../models/BookSchema');
 const transactionUtils = require("../utils/TransactionUtils");
+const ForbiddenRequestError = require("../errors/ForbiddenRequestError");
 
 const findAllFines = async () => {
     try {
@@ -116,10 +117,14 @@ const findFineById = async (params) => {
 
 const findFineByIdWithByAuthUser = async (req) => {
     try {
-        return await Fine.findOne({_id: req.params.id, member: req.user.profile})
+        const fine = await Fine.findOne({_id: req.params.id, member: req.user.profile})
             .populate({path: 'member', select: ['fullName', 'avatar']})
             .populate({path: 'book', select: ['title', 'edition', 'cover']})
             .populate({path: 'librarian', select: ['fullName']});
+
+        if (!fine) throw new ForbiddenRequestError("You do not have access rights to the content!");
+
+        return fine;
     } catch (error) {
         throw error;
     }

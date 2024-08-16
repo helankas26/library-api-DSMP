@@ -6,6 +6,7 @@ const Book = require("../models/BookSchema");
 const Config = require("../models/ConfigSchema");
 const ConflictError = require("../errors/ConflictError");
 const NotFoundError = require("../errors/NotFoundError");
+const ForbiddenRequestError = require("../errors/ForbiddenRequestError");
 
 const findAllReservations = async () => {
     try {
@@ -147,9 +148,13 @@ const findReservationById = async (params) => {
 
 const findReservationByIdWithByAuthUser = async (req) => {
     try {
-        return await Reservation.findOne({_id: req.params.id, member: req.user.profile})
+        const reservation = await Reservation.findOne({_id: req.params.id, member: req.user.profile})
             .populate({path: 'book', select: ['title', 'edition', 'cover']})
             .populate({path: 'member', select: ['fullName', 'avatar']});
+
+        if (!reservation) throw new ForbiddenRequestError("You do not have access rights to the content!");
+
+        return reservation;
     } catch (error) {
         throw error;
     }
