@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Book = require('../models/BookSchema');
 const Author = require('../models/AuthorSchema');
 const Category = require('../models/CategorySchema');
+const NotFoundError = require("../errors/NotFoundError");
 
 const findAllBooks = async () => {
     try {
@@ -69,7 +70,7 @@ const createBook = async (bookData) => {
             category.books.push(savedBook._id);
             await category.save();
         } catch (error) {
-            throw new Error('Category not found. Could not save book. Try again!');
+            throw new NotFoundError('Category not found. Could not save book. Try again!');
         }
 
         for (const authorId of bookData.authors) {
@@ -78,7 +79,7 @@ const createBook = async (bookData) => {
                 author.books.push(savedBook._id);
                 await author.save();
             } catch (error) {
-                throw new Error('An Author not found. Could not save book. Try again!');
+                throw new NotFoundError('An Author not found. Could not save book. Try again!');
             }
         }
 
@@ -127,7 +128,7 @@ const updateBook = async (params, bookData) => {
 
         const book = await Book.findById(params.id).session(session);
         if (!book) {
-            throw new Error("Book not found. Try again!");
+            throw new NotFoundError("Book not found. Try again!");
         }
         const copies = bookData.noOfCopies - book.noOfCopies;
         bookData.availableCount = book.availableCount + copies;
@@ -148,7 +149,7 @@ const updateBook = async (params, bookData) => {
                 await Category.findByIdAndUpdate(bookData.category, {$addToSet: {books: params.id}}, {runValidators: true}).session(session);
             }
         } catch (error) {
-            throw new Error('Category not found. Could not update book. Try again!');
+            throw new NotFoundError('Category not found. Could not update book. Try again!');
         }
 
         const currentAuthors = authors.map(author => author._id);
@@ -165,7 +166,7 @@ const updateBook = async (params, bookData) => {
             try {
                 await Author.findByIdAndUpdate(authorId, {$addToSet: {books: params.id}}, {runValidators: true}).session(session);
             } catch (error) {
-                throw new Error('An Author not found. Could not save book. Try again!');
+                throw new NotFoundError('An Author not found. Could not save book. Try again!');
             }
         }
 

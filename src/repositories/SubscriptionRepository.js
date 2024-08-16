@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const Subscription = require('../models/SubscriptionSchema');
 const Config = require("../models/ConfigSchema");
 const Profile = require("../models/ProfileSchema");
+const ConflictError = require("../errors/ConflictError");
+const NotFoundError = require("../errors/NotFoundError");
 
 const findAllSubscriptions = async () => {
     try {
@@ -107,14 +109,14 @@ const createSubscription = async (req) => {
         try {
             const profile = await Profile.findById(subscriptionData.member).session(session);
             if (!profile) {
-                throw new Error("Profile not found. Payment unsuccessful. Try again!");
+                throw new ConflictError("Profile not found. Payment unsuccessful. Try again!");
             }
 
             if (profile.paymentStatus > 0) {
                 profile.paymentStatus -= 1;
                 await profile.save({session: session});
             } else {
-                throw new Error("Payment unsuccessful. Could not pay for up coming month!");
+                throw new ConflictError("Payment unsuccessful. Could not pay for up coming month!");
             }
         } catch (error) {
             throw error;
@@ -176,12 +178,12 @@ const deleteSubscription = async (params) => {
 
         const payment = await Subscription.findById(params.id).session(session);
         if (!payment) {
-            throw new Error("Payment not found. Try again!");
+            throw new NotFoundError("Payment not found. Try again!");
         }
 
         const profile = await Profile.findById(payment.member).session(session);
         if (!profile) {
-            throw new Error("Member not found. Try again!");
+            throw new NotFoundError("Member not found. Try again!");
         }
 
         profile.paymentStatus += 1;

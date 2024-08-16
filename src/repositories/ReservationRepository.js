@@ -4,6 +4,8 @@ const Reservation = require('../models/ReservationSchema');
 const Profile = require("../models/ProfileSchema");
 const Book = require("../models/BookSchema");
 const Config = require("../models/ConfigSchema");
+const ConflictError = require("../errors/ConflictError");
+const NotFoundError = require("../errors/NotFoundError");
 
 const findAllReservations = async () => {
     try {
@@ -94,17 +96,17 @@ const createReservation = async (req) => {
             Book.findById(reservationData.book).session(session)
         ]);
 
-        if (reservationExist) throw new Error("You have already reserved this book!");
-        if (!profile) throw new Error("Profile not found. Reservation unsuccessful. Try again!");
-        if (!config) throw new Error("Configuration not found. Reservation unsuccessful. Try again!");
-        if (!book) throw new Error("Book not found. Reservation unsuccessful. Try again!");
+        if (reservationExist) throw new ConflictError("You have already reserved this book!");
+        if (!profile) throw new NotFoundError("Profile not found. Reservation unsuccessful. Try again!");
+        if (!config) throw new NotFoundError("Configuration not found. Reservation unsuccessful. Try again!");
+        if (!book) throw new NotFoundError("Book not found. Reservation unsuccessful. Try again!");
 
         if (profile.reservationCount >= config.noOfReservation.count) {
-            throw new Error("Reservation limit exceeded!");
+            throw new ConflictError("Reservation limit exceeded!");
         }
 
         if (book.availableCount <= 0) {
-            throw new Error("This book is not available to reserve!");
+            throw new ConflictError("This book is not available to reserve!");
         }
 
         const reservation = new Reservation({
@@ -160,25 +162,25 @@ const updateReservation = async (params, reservationData) => {
         session.startTransaction();
 
         const tempReservation = await Reservation.findById(params.id).session(session);
-        if (!tempReservation) throw new Error("Reservation not found. Try again!");
+        if (!tempReservation) throw new NotFoundError("Reservation not found. Try again!");
 
         const [profile, book] = await Promise.all([
             Profile.findById(tempReservation.member).session(session),
             Book.findById(tempReservation.book).session(session)
         ]);
 
-        if (!profile) throw new Error("Member not found. Try again!");
-        if (!book) throw new Error("Book not found. Try again!");
+        if (!profile) throw new NotFoundError("Member not found. Try again!");
+        if (!book) throw new NotFoundError("Book not found. Try again!");
 
         if (['CANCELLED', 'BORROWED', 'EXPIRED'].includes(reservationData.status)) {
             if (['CANCELLED', 'BORROWED', 'EXPIRED'].includes(tempReservation.status)) {
-                throw new Error(`Reservation is already ${tempReservation.status.toLowerCase()}!`);
+                throw new ConflictError(`Reservation is already ${tempReservation.status.toLowerCase()}!`);
             }
 
             profile.reservationCount -= 1;
             book.availableCount += 1;
         } else if (reservationData.status === 'RESERVED') {
-            if (tempReservation.status === 'RESERVED') throw new Error("Book is already reserved!");
+            if (tempReservation.status === 'RESERVED') throw new ConflictError("Book is already reserved!");
 
             profile.reservationCount += 1;
             book.availableCount -= 1;
@@ -212,15 +214,15 @@ const deleteReservation = async (params) => {
         session.startTransaction();
 
         const tempReservation = await Reservation.findById(params.id).session(session);
-        if (!tempReservation) throw new Error("Reservation not found. Try again!");
+        if (!tempReservation) throw new NotFoundError("Reservation not found. Try again!");
 
         const [profile, book] = await Promise.all([
             Profile.findById(tempReservation.member).session(session),
             Book.findById(tempReservation.book).session(session)
         ]);
 
-        if (!profile) throw new Error("Member not found. Try again!");
-        if (!book) throw new Error("Book not found. Try again!");
+        if (!profile) throw new NotFoundError("Member not found. Try again!");
+        if (!book) throw new NotFoundError("Book not found. Try again!");
 
         if (tempReservation.status === 'RESERVED') {
             profile.reservationCount -= 1;
