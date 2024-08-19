@@ -73,11 +73,54 @@ const findAllFinesBySearchWithPagination = async (searchText, page, size) => {
 }
 
 const findAllFinesWithPaginationByAuthUser = async (req, page, size) => {
-    return "not implemented"
+    try {
+        const totalCount = await Fine.find({member: req.user.profile}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const fines = await Fine.find({member: req.user.profile}).sort({createdAt: 'desc'}).skip(skip).limit(size)
+            .populate({path: 'member', select: ['fullName']})
+            .populate({path: 'book', select: ['title', 'edition']})
+            .populate({path: 'librarian', select: ['fullName']});
+        const to = skip + fines.length;
+
+        return {fines, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const findAllFinesBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
-    return "not implemented"
+    try {
+        const query = {
+            $or: [
+                {$text: {$search: searchText}},
+                {book: {$in: (await Book.find({$text: {$search: searchText}}).distinct('_id'))}},
+                {librarian: {$in: (await Profile.find({$text: {$search: searchText}}).distinct('_id'))}}
+            ],
+            member: req.user.profile
+        };
+        const skip = (page - 1) * size;
+
+        const [totalCount, fines] = await Promise.all([
+            Fine.countDocuments(query),
+            Fine.find(query)
+                .skip(skip)
+                .limit(size)
+                .populate({path: 'member', select: ['fullName']})
+                .populate({path: 'book', select: ['title', 'edition']})
+                .populate({path: 'librarian', select: ['fullName']})
+        ]);
+
+        const totalPages = Math.ceil(totalCount / size);
+        const from = skip + 1;
+        const to = from + fines.length - 1;
+
+        return {fines, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const createFine = async (req) => {

@@ -67,11 +67,51 @@ const findAllSubscriptionsBySearchWithPagination = async (searchText, page, size
 }
 
 const findAllSubscriptionsWithPaginationByAuthUser = async (req, page, size) => {
-    return "not implemented"
+    try {
+        const totalCount = await Subscription.find({member: req.user.profile}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const subscriptions = await Subscription.find({member: req.user.profile}).sort({paidAt: 'desc'}).skip(skip).limit(size)
+            .populate({path: 'member', select: ['fullName']})
+            .populate({path: 'librarian', select: ['fullName']});
+        const to = skip + subscriptions.length;
+
+        return {subscriptions, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const findAllSubscriptionsBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
-    return "not implemented"
+    try {
+        const query = {
+            $or: [
+                {$text: {$search: searchText}},
+                {librarian: {$in: (await Profile.find({$text: {$search: searchText}}).distinct('_id'))}}
+            ],
+            member: req.user.profile
+        };
+        const skip = (page - 1) * size;
+
+        const [totalCount, subscriptions] = await Promise.all([
+            Subscription.countDocuments(query),
+            Subscription.find(query)
+                .skip(skip)
+                .limit(size)
+                .populate({path: 'member', select: ['fullName']})
+                .populate({path: 'librarian', select: ['fullName']})
+        ]);
+
+        const totalPages = Math.ceil(totalCount / size);
+        const from = skip + 1;
+        const to = from + subscriptions.length - 1;
+
+        return {subscriptions, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const createSubscription = async (req) => {

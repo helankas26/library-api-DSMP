@@ -76,11 +76,54 @@ const findAllTransactionsBySearchWithPagination = async (searchText, page, size)
 }
 
 const findAllTransactionsWithPaginationByAuthUser = async (req, page, size) => {
-    return "not implemented"
+    try {
+        const totalCount = await Transaction.find({member: req.user.profile}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const transactions = await Transaction.find({member: req.user.profile}).sort({issuedAt: 'desc'}).skip(skip).limit(size)
+            .populate({path: 'books', select: ['title', 'edition', 'name']})
+            .populate({path: 'member', select: ['fullName']})
+            .populate({path: 'librarian', select: ['fullName']});
+        const to = skip + transactions.length;
+
+        return {transactions, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const findAllTransactionsBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
-    return "not implemented"
+    try {
+        const query = {
+            $or: [
+                {$text: {$search: searchText}},
+                {books: {$in: (await Book.find({$text: {$search: searchText}}).distinct('_id'))}},
+                {librarian: {$in: (await Profile.find({$text: {$search: searchText}}).distinct('_id'))}}
+            ],
+            member: req.user.profile
+        };
+        const skip = (page - 1) * size;
+
+        const [totalCount, transactions] = await Promise.all([
+            Transaction.countDocuments(query),
+            Transaction.find(query)
+                .skip(skip)
+                .limit(size)
+                .populate({path: 'books', select: ['title', 'edition', 'name']})
+                .populate({path: 'member', select: ['fullName']})
+                .populate({path: 'librarian', select: ['fullName']})
+        ]);
+
+        const totalPages = Math.ceil(totalCount / size);
+        const from = skip + 1;
+        const to = from + transactions.length - 1;
+
+        return {transactions, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const createTransaction = async (req) => {

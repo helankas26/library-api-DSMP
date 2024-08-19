@@ -71,11 +71,51 @@ const findAllReservationsBySearchWithPagination = async (searchText, page, size)
 }
 
 const findAllReservationsWithPaginationByAuthUser = async (req, page, size) => {
-    return "not implemented"
+    try {
+        const totalCount = await Reservation.find({member: req.user.profile}).countDocuments();
+        const totalPages = Math.ceil(totalCount / size);
+        const skip = (page - 1) * size;
+        const from = skip + 1;
+
+        const reservations = await Reservation.find({member: req.user.profile}).sort({reservationAt: 'desc'}).skip(skip).limit(size)
+            .populate({path: 'book', select: ['title', 'edition']})
+            .populate({path: 'member', select: ['fullName']});
+        const to = skip + reservations.length;
+
+        return {reservations, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const findAllReservationsBySearchWithPaginationByAuthUser = async (req, searchText, page, size) => {
-    return "not implemented"
+    try {
+        const query = {
+            $or: [
+                {$text: {$search: searchText}},
+                {book: {$in: (await Book.find({$text: {$search: searchText}}).distinct('_id'))}}
+            ],
+            member: req.user.profile
+        };
+        const skip = (page - 1) * size;
+
+        const [totalCount, reservations] = await Promise.all([
+            Reservation.countDocuments(query),
+            Reservation.find(query)
+                .skip(skip)
+                .limit(size)
+                .populate({path: 'book', select: ['title', 'edition']})
+                .populate({path: 'member', select: ['fullName']})
+        ]);
+
+        const totalPages = Math.ceil(totalCount / size);
+        const from = skip + 1;
+        const to = from + reservations.length - 1;
+
+        return {reservations, totalCount, totalPages, from, to};
+    } catch (error) {
+        throw error;
+    }
 }
 
 const createReservation = async (req) => {
