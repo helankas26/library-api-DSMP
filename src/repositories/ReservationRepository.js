@@ -7,6 +7,7 @@ const Config = require("../models/ConfigSchema");
 const ConflictError = require("../errors/ConflictError");
 const NotFoundError = require("../errors/NotFoundError");
 const ForbiddenRequestError = require("../errors/ForbiddenRequestError");
+const UnprocessableError = require("../errors/UnprocessableError");
 
 const findAllReservations = async () => {
     try {
@@ -252,6 +253,58 @@ const updateReservation = async (params, reservationData) => {
     }
 }
 
+const updateReservationByAuthUser = async (req) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const tempReservation = await Reservation.findOne({
+            _id: req.params.id,
+            member: req.user.profile
+        }).session(session);
+        if (!tempReservation) throw new ForbiddenRequestError("You do not have access rights to update the content!");
+
+        const [profile, book] = await Promise.all([
+            Profile.findById(req.user.profile).session(session),
+            Book.findById(tempReservation.book).session(session)
+        ]);
+
+        if (!profile) throw new NotFoundError("Member not found. Try again!");
+        if (!book) throw new NotFoundError("Book not found. Try again!");
+
+        if ('CANCELLED' === req.body.status) {
+            if ('CANCELLED' === tempReservation.status) {
+                throw new ConflictError(`Reservation is already ${tempReservation.status.toLowerCase()}!`);
+            }
+
+            profile.reservationCount -= 1;
+            book.availableCount += 1;
+        } else {
+            throw new UnprocessableError('Unable to process the request!');
+        }
+
+        await Promise.all([
+            profile.save({session}),
+            book.save({session})
+        ]);
+
+        const reservation = await Reservation.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+            session: session
+        });
+
+        await session.commitTransaction();
+        return reservation;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        await session.endSession();
+    }
+}
+
 const deleteReservation = async (params) => {
     const session = await mongoose.startSession();
 
@@ -301,5 +354,6 @@ module.exports = {
     findReservationById,
     findReservationByIdWithByAuthUser,
     updateReservation,
+    updateReservationByAuthUser,
     deleteReservation
 }

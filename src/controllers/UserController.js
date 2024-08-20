@@ -24,6 +24,11 @@ const findUserById = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 200, {user});
 });
 
+const findUserByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const user = await userService.findUserByAuthUser(req);
+    await sendResponse(resp, 200, {user});
+});
+
 const updateUser = asyncErrorHandler(async (req, resp, next) => {
     if (req.params.id === req.user.id) {
         const error = new BadRequestError('For current user can not change role.');
@@ -69,6 +74,7 @@ module.exports = {
     findAllUsersWithPagination,
     findAllUsersBySearchWithPagination,
     findUserById,
+    findUserByAuthUser,
     updateUser,
     updateUserByAuthUser,
     changePasswordByAuthUser,

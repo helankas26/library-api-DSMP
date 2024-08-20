@@ -75,6 +75,14 @@ const findUserById = async (params) => {
     }
 }
 
+const findUserByAuthUser = async (req) => {
+    try {
+        return await User.findOne({profile: req.user.profile});
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateUser = async (req) => {
     try {
         const filterObj = filterReqObj(req.body, 'role');
@@ -127,6 +135,7 @@ module.exports = {
     findAllUsersWithPagination,
     findAllUsersBySearchWithPagination,
     findUserById,
+    findUserByAuthUser,
     updateUser,
     updateUserByAuthUser,
     changeUserPasswordByAuthUser,

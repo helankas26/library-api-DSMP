@@ -21,7 +21,9 @@ router.route('/list')
 router.route('/query')
     .get(authMiddleware.checkPermission('ADMIN'), userController.findAllUsersBySearchWithPagination);
 
-router.route('/auth').patch(authMiddleware.checkPermission('ADMIN', 'USER'), userController.updateUserByAuthUser);
+router.route('/auth')
+    .get(authMiddleware.checkPermission('ADMIN', 'USER'), userController.findUserByAuthUser)
+    .patch(authMiddleware.checkPermission('ADMIN', 'USER'), userController.updateUserByAuthUser);
 router.route('/auth/changePassword').patch(authMiddleware.checkPermission('ADMIN', 'USER'), userController.changePasswordByAuthUser);
 
 router.route('/:id')

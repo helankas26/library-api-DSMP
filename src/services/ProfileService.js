@@ -134,6 +134,14 @@ const updateProfile = async (reqParams, reqBody) => {
     }
 }
 
+const updateProfileByAuthUser = async (req) => {
+    try {
+        return await profileRepository.updateProfileByAuthUser(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const deleteProfile = async (reqParams) => {
     try {
         return await profileRepository.deleteProfile(reqParams);
@@ -156,5 +164,6 @@ module.exports = {
     getMemberCurrentLoansById,
     getMemberAvailableReservationsById,
     updateProfile,
+    updateProfileByAuthUser,
     deleteProfile
 }

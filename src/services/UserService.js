@@ -44,6 +44,14 @@ const findUserById = async (reqParams) => {
     }
 }
 
+const findUserByAuthUser = async (req) => {
+    try {
+        return await userRepository.findUserByAuthUser(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const updateUser = async (req) => {
     try {
         return await userRepository.updateUser(req);
@@ -94,6 +102,7 @@ module.exports = {
     findAllUsersWithPagination,
     findAllUsersBySearchWithPagination,
     findUserById,
+    findUserByAuthUser,
     updateUser,
     updateUserByAuthUser,
     changeUserPasswordByAuthUser,

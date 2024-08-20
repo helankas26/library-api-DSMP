@@ -32,7 +32,8 @@ router.route('/payment-status/query')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllMembersPaymentStatusBySearch);
 
 router.route('/auth')
-    .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findProfileByAuthUser);
+    .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findProfileByAuthUser)
+    .patch(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.updateProfileByAuthUser);
 
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findProfileById)

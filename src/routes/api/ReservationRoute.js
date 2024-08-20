@@ -34,6 +34,7 @@ router.route('/:id')
     .delete(authMiddleware.checkPermission('ADMIN'), reservationController.deleteReservation);
 
 router.route('/:id/auth')
-    .get(authMiddleware.checkPermission('USER'), reservationController.findReservationByIdWithByAuthUser);
+    .get(authMiddleware.checkPermission('USER'), reservationController.findReservationByIdWithByAuthUser)
+    .patch(authMiddleware.checkPermission('USER'), reservationController.updateReservationByAuthUser);
 
 module.exports = router;

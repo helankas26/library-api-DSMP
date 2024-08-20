@@ -246,6 +246,14 @@ const updateProfile = async (params, profileData) => {
     }
 }
 
+const updateProfileByAuthUser = async (req) => {
+    try {
+        return await Profile.findByIdAndUpdate(req.user.profile, req.body, {new: true, runValidators: true});
+    } catch (error) {
+        throw error;
+    }
+}
+
 const deleteProfile = async (params) => {
     const session = await mongoose.startSession();
 
@@ -284,5 +292,6 @@ module.exports = {
     getMemberCurrentLoansById,
     getMemberAvailableReservationsById,
     updateProfile,
+    updateProfileByAuthUser,
     deleteProfile
 }

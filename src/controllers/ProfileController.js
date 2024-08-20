@@ -68,6 +68,11 @@ const updateProfile = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 201, {profile});
 });
 
+const updateProfileByAuthUser = asyncErrorHandler(async (req, resp, next) => {
+    const profile = await profileService.updateProfileByAuthUser(req);
+    await sendResponse(resp, 201, {profile});
+});
+
 const deleteProfile = asyncErrorHandler(async (req, resp, next) => {
     const profile = await profileService.deleteProfile(req.params);
     await sendResponse(resp, 204, {id: profile.id});
@@ -87,5 +92,6 @@ module.exports = {
     getMemberCurrentLoansById,
     getMemberAvailableReservationsById,
     updateProfile,
+    updateProfileByAuthUser,
     deleteProfile
 }

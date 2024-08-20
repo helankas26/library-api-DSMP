@@ -86,6 +86,14 @@ const updateReservation = async (reqParams, reqBody) => {
     }
 }
 
+const updateReservationByAuthUser = async (req) => {
+    try {
+        return await reservationRepository.updateReservationByAuthUser(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const deleteReservation = async (reqParams) => {
     try {
         return await reservationRepository.deleteReservation(reqParams);
@@ -104,5 +112,6 @@ module.exports = {
     findReservationById,
     findReservationByIdWithByAuthUser,
     updateReservation,
+    updateReservationByAuthUser,
     deleteReservation
 }
