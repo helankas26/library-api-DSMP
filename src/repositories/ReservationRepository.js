@@ -308,13 +308,15 @@ const updateReservationByAuthUser = async (req) => {
 const expireReservations = async () => {
     const session = await mongoose.startSession();
     let updatedReservations = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     try {
         session.startTransaction();
 
         const reservations = await Reservation.find({
             status: 'RESERVED',
-            dueAt: {$lt: Date.now()}
+            dueAt: {$lt: today}
         }).session(session);
 
         if (reservations.length === 0) return;

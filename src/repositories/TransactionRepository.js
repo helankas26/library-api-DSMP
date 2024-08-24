@@ -260,13 +260,15 @@ const updateTransaction = async (params, req) => {
 const overdueTransactions = async () => {
     const session = await mongoose.startSession();
     let updatedTransactions = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     try {
         session.startTransaction();
 
         const transactions = await Transaction.find({
             status: 'BORROWED',
-            dueAt: {$lt: Date.now()}
+            dueAt: {$lt: today}
         }).session(session);
 
         if (transactions.length === 0) return;

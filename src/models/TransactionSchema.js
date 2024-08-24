@@ -66,6 +66,7 @@ transactionSchema.index({librarian: 1});
 transactionSchema.virtual('noOfDate').get(function () {
     const today = new Date();
     const dueDate = new Date(this.dueAt);
+    today.setHours(0, 0, 0, 0);
 
     if (['BORROWED', 'OVERDUE'].includes(this.status) && today > dueDate) {
         const delay = Math.ceil((today - dueDate) / (24 * 60 * 60 * 1000));
