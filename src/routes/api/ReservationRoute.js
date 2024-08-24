@@ -28,6 +28,9 @@ router.route('/auth/list')
 router.route('/auth/query')
     .get(authMiddleware.checkPermission('USER'), reservationController.findAllReservationsBySearchWithPaginationByAuthUser);
 
+router.route('/cron-job')
+    .patch(authMiddleware.checkPermission('ADMIN'), reservationController.expireReservations);
+
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), reservationController.findReservationById)
     .patch(authMiddleware.checkPermission('ADMIN'), reservationController.updateReservation)

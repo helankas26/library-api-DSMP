@@ -6,6 +6,7 @@ const idGenerate = require("../utils/IdGenerateUtil");
 const UnprocessableError = require("../errors/UnprocessableError");
 const Admission = require("../models/AdmissionSchema");
 const Config = require("../models/ConfigSchema");
+const {filterReqObj} = require("../utils/FilterRequestUtil");
 
 const findAllProfiles = async () => {
     try {
@@ -143,7 +144,7 @@ const createProfile = async (req) => {
             throw new Error("Could not create profile. Try again!");
         }
 
-        if (savedProfile.type === 'MEMBER') {
+        if (savedProfile.type.toString() === 'MEMBER') {
             try {
                 const admission = new Admission({
                     fee: await (async () => {
@@ -240,7 +241,28 @@ const getMemberAvailableReservationsById = async (params) => {
 
 const updateProfile = async (params, profileData) => {
     try {
-        return await Profile.findByIdAndUpdate(params.id, profileData, {new: true, runValidators: true});
+        const update = {$set: {...profileData}};
+
+        if (profileData.type) {
+            const docToUpdate = await Profile.findById(params.id);
+
+            if (profileData.type === 'LIBRARIAN') {
+                update.$unset = {
+                    paymentStatus: '',
+                    reservationCount: '',
+                    borrowCount: ''
+                };
+            } else if (profileData.type === 'MEMBER' && docToUpdate.type.toString() !== 'MEMBER') {
+                update.$set = {
+                    ...update.$set,
+                    paymentStatus: 1,
+                    reservationCount: 0,
+                    borrowCount: 0
+                };
+            }
+        }
+
+        return await Profile.findByIdAndUpdate(params.id, update, {new: true, runValidators: false});
     } catch (error) {
         throw error;
     }
@@ -248,7 +270,21 @@ const updateProfile = async (params, profileData) => {
 
 const updateProfileByAuthUser = async (req) => {
     try {
-        return await Profile.findByIdAndUpdate(req.user.profile, req.body, {new: true, runValidators: true});
+        const filterObj = filterReqObj(req.body, 'fullName', 'avatar', 'email', 'telNo', 'address');
+
+        return await Profile.findByIdAndUpdate(req.user.profile, filterObj, {new: true, runValidators: true});
+    } catch (error) {
+        throw error;
+    }
+}
+
+const incrementPaymentStatus = async () => {
+    try {
+        return await Profile.updateMany(
+            {type: 'MEMBER', paymentStatus: {$exists: true}},
+            {$inc: {paymentStatus: 1}},
+            {new: true, runValidators: true}
+        );
     } catch (error) {
         throw error;
     }
@@ -293,5 +329,6 @@ module.exports = {
     getMemberAvailableReservationsById,
     updateProfile,
     updateProfileByAuthUser,
+    incrementPaymentStatus,
     deleteProfile
 }

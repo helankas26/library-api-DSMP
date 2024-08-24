@@ -53,6 +53,11 @@ const updateTransaction = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 201, {transaction});
 });
 
+const overdueTransactions = asyncErrorHandler(async (req, resp, next) => {
+    const transactions = await transactionService.overdueTransactions();
+    await sendResponse(resp, 201, {transactions});
+});
+
 const deleteTransaction = asyncErrorHandler(async (req, resp, next) => {
     const transaction = await transactionService.deleteTransaction(req.params);
     await sendResponse(resp, 204, {id: transaction.id});
@@ -69,5 +74,6 @@ module.exports = {
     findTransactionByIdWithByAuthUser,
     getTransactionFineDetailsById,
     updateTransaction,
+    overdueTransactions,
     deleteTransaction
 }

@@ -257,6 +257,42 @@ const updateTransaction = async (params, req) => {
     }
 }
 
+const overdueTransactions = async () => {
+    const session = await mongoose.startSession();
+    let updatedTransactions = [];
+
+    try {
+        session.startTransaction();
+
+        const transactions = await Transaction.find({
+            status: 'BORROWED',
+            dueAt: {$lt: Date.now()}
+        }).session(session);
+
+        if (transactions.length === 0) return;
+
+        for await (const transaction of transactions) {
+            const updatedTransaction = await Transaction.findByIdAndUpdate(transaction._id, {status: "OVERDUE"}, {
+                new: true,
+                runValidators: true,
+                session: session
+            });
+
+            if (updatedTransaction) {
+                updatedTransactions.push(updatedTransaction);
+            }
+        }
+
+        await session.commitTransaction();
+        return updatedTransactions;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        await session.endSession();
+    }
+}
+
 const deleteTransaction = async (params) => {
     const session = await mongoose.startSession();
 
@@ -309,5 +345,6 @@ module.exports = {
     findTransactionByIdWithByAuthUser,
     getTransactionFineDetailsById,
     updateTransaction,
+    overdueTransactions,
     deleteTransaction
 }

@@ -35,6 +35,9 @@ router.route('/auth')
     .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findProfileByAuthUser)
     .patch(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.updateProfileByAuthUser);
 
+router.route('/cron-job')
+    .patch(authMiddleware.checkPermission('ADMIN'), profileController.incrementPaymentStatus);
+
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findProfileById)
     .patch(authMiddleware.checkPermission('ADMIN'), profileController.updateProfile)

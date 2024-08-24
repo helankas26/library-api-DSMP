@@ -142,6 +142,14 @@ const updateProfileByAuthUser = async (req) => {
     }
 }
 
+const incrementPaymentStatus = async () => {
+    try {
+        return await profileRepository.incrementPaymentStatus();
+    } catch (error) {
+        throw error;
+    }
+}
+
 const deleteProfile = async (reqParams) => {
     try {
         return await profileRepository.deleteProfile(reqParams);
@@ -165,5 +173,6 @@ module.exports = {
     getMemberAvailableReservationsById,
     updateProfile,
     updateProfileByAuthUser,
+    incrementPaymentStatus,
     deleteProfile
 }

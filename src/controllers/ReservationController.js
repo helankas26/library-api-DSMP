@@ -53,6 +53,11 @@ const updateReservationByAuthUser = asyncErrorHandler(async (req, resp, next) =>
     await sendResponse(resp, 201, {reservation});
 });
 
+const expireReservations = asyncErrorHandler(async (req, resp, next) => {
+    const reservations = await reservationService.expireReservations();
+    await sendResponse(resp, 201, {reservations});
+});
+
 const deleteReservation = asyncErrorHandler(async (req, resp, next) => {
     const reservation = await reservationService.deleteReservation(req.params);
     await sendResponse(resp, 204, {id: reservation.id});
@@ -69,5 +74,6 @@ module.exports = {
     findReservationByIdWithByAuthUser,
     updateReservation,
     updateReservationByAuthUser,
+    expireReservations,
     deleteReservation
 }

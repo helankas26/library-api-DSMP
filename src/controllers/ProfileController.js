@@ -73,6 +73,11 @@ const updateProfileByAuthUser = asyncErrorHandler(async (req, resp, next) => {
     await sendResponse(resp, 201, {profile});
 });
 
+const incrementPaymentStatus = asyncErrorHandler(async (req, resp, next) => {
+    const profiles = await profileService.incrementPaymentStatus();
+    await sendResponse(resp, 201, {profiles});
+});
+
 const deleteProfile = asyncErrorHandler(async (req, resp, next) => {
     const profile = await profileService.deleteProfile(req.params);
     await sendResponse(resp, 204, {id: profile.id});
@@ -93,5 +98,6 @@ module.exports = {
     getMemberAvailableReservationsById,
     updateProfile,
     updateProfileByAuthUser,
+    incrementPaymentStatus,
     deleteProfile
 }

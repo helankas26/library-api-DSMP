@@ -305,6 +305,57 @@ const updateReservationByAuthUser = async (req) => {
     }
 }
 
+const expireReservations = async () => {
+    const session = await mongoose.startSession();
+    let updatedReservations = [];
+
+    try {
+        session.startTransaction();
+
+        const reservations = await Reservation.find({
+            status: 'RESERVED',
+            dueAt: {$lt: Date.now()}
+        }).session(session);
+
+        if (reservations.length === 0) return;
+
+        for await (const reservation of reservations) {
+            const [profile, book] = await Promise.all([
+                Profile.findById(reservation.member).session(session),
+                Book.findById(reservation.book).session(session)
+            ]);
+
+            if (!profile || !book) continue;
+
+            profile.reservationCount -= 1;
+            book.availableCount += 1;
+
+            await Promise.all([
+                profile.save({session}),
+                book.save({session})
+            ]);
+
+            const updatedReservation = await Reservation.findByIdAndUpdate(reservation._id, {status: 'EXPIRED'}, {
+                new: true,
+                runValidators: true,
+                session: session
+            });
+
+            if (updatedReservation) {
+                updatedReservations.push(updatedReservation);
+            }
+        }
+
+        await session.commitTransaction();
+        return updatedReservations;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        await session.endSession();
+    }
+}
+
 const deleteReservation = async (params) => {
     const session = await mongoose.startSession();
 
@@ -355,5 +406,6 @@ module.exports = {
     findReservationByIdWithByAuthUser,
     updateReservation,
     updateReservationByAuthUser,
+    expireReservations,
     deleteReservation
 }

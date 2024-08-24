@@ -94,6 +94,14 @@ const updateTransaction = async (reqParams, req) => {
     }
 }
 
+const overdueTransactions = async () => {
+    try {
+        return await transactionRepository.overdueTransactions();
+    } catch (error) {
+        throw error;
+    }
+}
+
 const deleteTransaction = async (reqParams) => {
     try {
         return await transactionRepository.deleteTransaction(reqParams);
@@ -113,5 +121,6 @@ module.exports = {
     findTransactionByIdWithByAuthUser,
     getTransactionFineDetailsById,
     updateTransaction,
+    overdueTransactions,
     deleteTransaction
 }
