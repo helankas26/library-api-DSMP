@@ -14,10 +14,11 @@ dotenv.config();
 
 const {PORT, HOSTNAME} = require('./src/config/serverConfig');
 const globalErrorHandler = require('./src/middlewares/GlobalErrorHandler');
-const NotFoundError = require("./src/errors/NotFoundError");
-const TooManyRequestsError = require("./src/errors/TooManyRequestsError");
-const corsOptions = require("./src/config/corsOptions");
-const allowCredentials = require("./src/middlewares/AccessControlAllowCredentials");
+const NotFoundError = require('./src/errors/NotFoundError');
+const TooManyRequestsError = require('./src/errors/TooManyRequestsError');
+const corsOptions = require('./src/config/corsOptions');
+const allowCredentials = require('./src/middlewares/AccessControlAllowCredentials');
+const ScheduledTasks = require('./src/utils/ScheduledTasks');
 
 //----------------------- Routes import
 const dashboardRouteRoute = require('./src/routes/api/DashboardRouteRoute');
@@ -75,6 +76,10 @@ app.use(express.urlencoded({extended: true}));
 mongoose.connect(process.env.MONGODB_URI).then(() => {
     console.log('Connected to MongoDB');
 })
+
+ScheduledTasks.incrementPaymentStatus.start();
+ScheduledTasks.expireReservations.start();
+ScheduledTasks.overdueTransactions.start();
 
 const server = app.listen(PORT, HOSTNAME, () => {
     console.log(`server started & running on port ${PORT}`);
