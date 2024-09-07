@@ -54,6 +54,14 @@ const findAllSubscriptionsBySearchWithPaginationByAuthUser = async (req) => {
     }
 }
 
+const getTodaySubscriptionsCollection = async () => {
+    try {
+        return await subscriptionRepository.getTodaySubscriptionsCollection();
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createSubscription = async (req) => {
     try {
         return await subscriptionRepository.createSubscription(req);
@@ -100,6 +108,7 @@ module.exports = {
     findAllSubscriptionsBySearchWithPagination,
     findAllSubscriptionsWithPaginationByAuthUser,
     findAllSubscriptionsBySearchWithPaginationByAuthUser,
+    getTodaySubscriptionsCollection,
     createSubscription,
     findSubscriptionById,
     findSubscriptionByIdWithByAuthUser,

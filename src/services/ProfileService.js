@@ -63,6 +63,14 @@ const findAllMembersPaymentStatusBySearch = async (req) => {
     }
 }
 
+const findAllPaymentArrears = async (req) => {
+    try {
+        return await profileRepository.findAllPaymentArrears(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createProfile = async (req) => {
     try {
         const profileWithAdmission = await profileRepository.createProfile(req);
@@ -165,6 +173,7 @@ module.exports = {
     findAllProfilesBySearchWithPagination,
     findAllMembersPaymentStatus,
     findAllMembersPaymentStatusBySearch,
+    findAllPaymentArrears,
     createProfile,
     findProfileById,
     findMemberPaymentStatusById,

@@ -54,6 +54,14 @@ const findAllTransactionsBySearchWithPaginationByAuthUser = async (req) => {
     }
 }
 
+const findAllOverdue = async (req) => {
+    try {
+        return await transactionRepository.findAllOverdue(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createTransaction = async (req) => {
     try {
         return await transactionRepository.createTransaction(req);
@@ -116,6 +124,7 @@ module.exports = {
     findAllTransactionsBySearchWithPagination,
     findAllTransactionsWithPaginationByAuthUser,
     findAllTransactionsBySearchWithPaginationByAuthUser,
+    findAllOverdue,
     createTransaction,
     findTransactionById,
     findTransactionByIdWithByAuthUser,

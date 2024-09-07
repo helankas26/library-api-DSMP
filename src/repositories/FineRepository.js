@@ -123,6 +123,27 @@ const findAllFinesBySearchWithPaginationByAuthUser = async (req, searchText, pag
     }
 }
 
+const getTodayFinesCollection = async (req, searchText, page, size) => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    try {
+        const fines = await Fine.find({
+            createdAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        });
+
+        return fines.reduce((sum, fine) => sum + fine.fee, 0);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createFine = async (req) => {
     const session = await mongoose.startSession();
 
@@ -203,6 +224,7 @@ module.exports = {
     findAllFinesBySearchWithPagination,
     findAllFinesWithPaginationByAuthUser,
     findAllFinesBySearchWithPaginationByAuthUser,
+    getTodayFinesCollection,
     createFine,
     findFineById,
     findFineByIdWithByAuthUser,

@@ -30,6 +30,8 @@ router.route('/payment-status/list')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllMembersPaymentStatus);
 router.route('/payment-status/query')
     .get(authMiddleware.checkPermission('ADMIN'), profileController.findAllMembersPaymentStatusBySearch);
+router.route('/payment-status/arrears')
+    .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findAllPaymentArrears);
 
 router.route('/auth')
     .get(authMiddleware.checkPermission('ADMIN', 'USER'), profileController.findProfileByAuthUser)

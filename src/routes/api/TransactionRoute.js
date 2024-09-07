@@ -28,6 +28,9 @@ router.route('/auth/list')
 router.route('/auth/query')
     .get(authMiddleware.checkPermission('USER'), transactionController.findAllTransactionsBySearchWithPaginationByAuthUser);
 
+router.route('/overdue')
+    .get(authMiddleware.checkPermission('ADMIN', 'USER'), transactionController.findAllOverdue);
+
 router.route('/cron-job')
     .patch(authMiddleware.checkPermission('ADMIN'), transactionController.overdueTransactions);
 

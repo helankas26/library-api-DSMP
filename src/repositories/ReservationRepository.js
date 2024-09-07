@@ -119,6 +119,23 @@ const findAllReservationsBySearchWithPaginationByAuthUser = async (req, searchTe
     }
 }
 
+const findAllReserved = async (req) => {
+    const role = req.user.role;
+
+    try {
+        if (role === 'ADMIN') {
+            return await Reservation.find({status: 'RESERVED'}).sort({dueAt: 'asc'})
+                .populate({path: 'book', select: ['title', 'edition', 'name']})
+                .populate({path: 'member', select: ['fullName', 'avatar']});
+        } else if (role === 'USER') {
+            return await Reservation.find({status: 'RESERVED', member: req.user.profile}).sort({dueAt: 'asc'})
+                .populate({path: 'book', select: ['title', 'edition', 'name']});
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createReservation = async (req) => {
     const session = await mongoose.startSession();
 
@@ -403,6 +420,7 @@ module.exports = {
     findAllReservationsBySearchWithPagination,
     findAllReservationsWithPaginationByAuthUser,
     findAllReservationsBySearchWithPaginationByAuthUser,
+    findAllReserved,
     createReservation,
     findReservationById,
     findReservationByIdWithByAuthUser,

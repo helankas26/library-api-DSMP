@@ -23,6 +23,9 @@ router.route('/list')
 router.route('/query')
     .get(admissionController.findAllAdmissionsBySearchWithPagination);
 
+router.route('/today-collection')
+    .get(admissionController.getTodayAdmissionsCollection);
+
 router.route('/:id')
     .get(admissionController.findAdmissionById)
     .patch(admissionController.updateAdmission)

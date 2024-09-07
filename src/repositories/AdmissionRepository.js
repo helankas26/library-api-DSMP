@@ -62,6 +62,27 @@ const findAllAdmissionsBySearchWithPagination = async (searchText, page, size) =
     }
 }
 
+const getTodayAdmissionsCollection = async () => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    try {
+        const admissions = await Admission.find({
+            createdAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        });
+
+        return admissions.reduce((sum, admission) => sum + admission.fee, 0);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createAdmission = async (req) => {
     try {
         const admissionData = req.body;
@@ -119,6 +140,7 @@ module.exports = {
     findAllAdmissions,
     findAllAdmissionsWithPagination,
     findAllAdmissionsBySearchWithPagination,
+    getTodayAdmissionsCollection,
     createAdmission,
     findAdmissionById,
     updateAdmission,

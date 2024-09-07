@@ -126,6 +126,23 @@ const findAllTransactionsBySearchWithPaginationByAuthUser = async (req, searchTe
     }
 }
 
+const findAllOverdue = async (req) => {
+    const role = req.user.role;
+
+    try {
+        if (role === 'ADMIN') {
+            return await Transaction.find({status: 'OVERDUE'}).sort({dueAt: 'asc'})
+                .populate({path: 'books', select: ['title', 'edition', 'name']})
+                .populate({path: 'member', select: ['fullName', 'avatar']});
+        } else if (role === 'USER') {
+            return await Transaction.find({status: 'OVERDUE', member: req.user.profile}).sort({dueAt: 'asc'})
+                .populate({path: 'books', select: ['title', 'edition', 'name']});
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createTransaction = async (req) => {
     const session = await mongoose.startSession();
 
@@ -342,6 +359,7 @@ module.exports = {
     findAllTransactionsBySearchWithPagination,
     findAllTransactionsWithPaginationByAuthUser,
     findAllTransactionsBySearchWithPaginationByAuthUser,
+    findAllOverdue,
     createTransaction,
     findTransactionById,
     findTransactionByIdWithByAuthUser,

@@ -28,6 +28,9 @@ router.route('/auth/list')
 router.route('/auth/query')
     .get(authMiddleware.checkPermission('USER'), fineController.findAllFinesBySearchWithPaginationByAuthUser);
 
+router.route('/today-collection')
+    .get(authMiddleware.checkPermission('ADMIN'), fineController.getTodayFinesCollection);
+
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), fineController.findFineById)
     .patch(authMiddleware.checkPermission('ADMIN'), fineController.updateFine)

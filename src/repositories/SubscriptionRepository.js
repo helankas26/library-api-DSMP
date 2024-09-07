@@ -114,6 +114,27 @@ const findAllSubscriptionsBySearchWithPaginationByAuthUser = async (req, searchT
     }
 }
 
+const getTodaySubscriptionsCollection = async (req, searchText, page, size) => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    try {
+        const subscriptions = await Subscription.find({
+            paidAt: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        });
+
+        return subscriptions.reduce((sum, subscription) => sum + subscription.fee, 0);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createSubscription = async (req) => {
     const session = await mongoose.startSession();
 
@@ -251,6 +272,7 @@ module.exports = {
     findAllSubscriptionsBySearchWithPagination,
     findAllSubscriptionsWithPaginationByAuthUser,
     findAllSubscriptionsBySearchWithPaginationByAuthUser,
+    getTodaySubscriptionsCollection,
     createSubscription,
     findSubscriptionById,
     findSubscriptionByIdWithByAuthUser,

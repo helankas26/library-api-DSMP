@@ -28,6 +28,11 @@ const findAllSubscriptionsBySearchWithPaginationByAuthUser = asyncErrorHandler(a
     await sendResponse(resp, 200, subscriptionsWithPagination);
 });
 
+const getTodaySubscriptionsCollection = asyncErrorHandler(async (req, resp, next) => {
+    const subscriptionsCollection = await subscriptionService.getTodaySubscriptionsCollection();
+    await sendResponse(resp, 200, {subscriptionsCollection});
+});
+
 const createSubscription = asyncErrorHandler(async (req, resp, next) => {
     const subscription = await subscriptionService.createSubscription(req);
     await sendResponse(resp, 201, {subscription});
@@ -59,6 +64,7 @@ module.exports = {
     findAllSubscriptionsBySearchWithPagination,
     findAllSubscriptionsWithPaginationByAuthUser,
     findAllSubscriptionsBySearchWithPaginationByAuthUser,
+    getTodaySubscriptionsCollection,
     createSubscription,
     findSubscriptionById,
     findSubscriptionByIdWithByAuthUser,

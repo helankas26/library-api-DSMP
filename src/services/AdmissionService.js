@@ -31,6 +31,14 @@ const findAllAdmissionsBySearchWithPagination = async (req) => {
     }
 }
 
+const getTodayAdmissionsCollection = async () => {
+    try {
+        return await admissionRepository.getTodayAdmissionsCollection();
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createAdmission = async (req) => {
     try {
         return await admissionRepository.createAdmission(req);
@@ -67,6 +75,7 @@ module.exports = {
     findAllAdmissions,
     findAllAdmissionsWithPagination,
     findAllAdmissionsBySearchWithPagination,
+    getTodayAdmissionsCollection,
     createAdmission,
     findAdmissionById,
     updateAdmission,

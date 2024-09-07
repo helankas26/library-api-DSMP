@@ -125,6 +125,33 @@ const findAllMembersPaymentStatusBySearch = async (searchText, page, size) => {
     }
 }
 
+const findAllPaymentArrears = async (req) => {
+    const role = req.user.role;
+
+    try {
+        if (role === 'ADMIN') {
+            return await Profile.find({type: 'MEMBER', paymentStatus: {$gt: 1}}).select({
+                fullName: 1,
+                avatar: 1,
+                paymentStatus: 1
+            });
+        } else if (role === 'USER') {
+            const profile = await Profile.findById(req.user.profile).select({fullName: 1, avatar: 1, paymentStatus: 1});
+
+            return {
+                ...profile.toJSON(),
+                payments: Array.from({length: profile.paymentStatus}, (_, index) => ({
+                    index: index,
+                    payFor: new Date(new Date().getFullYear(), new Date().getMonth() - (profile.paymentStatus - (index + 1)))
+                        .toLocaleString('en-US', {month: 'long', year: 'numeric'})
+                }))
+            };
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createProfile = async (req) => {
     const profileData = req.body;
 
@@ -321,6 +348,7 @@ module.exports = {
     findAllProfilesBySearchWithPagination,
     findAllMembersPaymentStatus,
     findAllMembersPaymentStatusBySearch,
+    findAllPaymentArrears,
     createProfile,
     findProfileById,
     findMemberPaymentStatusById,

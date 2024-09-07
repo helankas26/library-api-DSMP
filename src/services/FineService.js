@@ -54,6 +54,14 @@ const findAllFinesBySearchWithPaginationByAuthUser = async (req) => {
     }
 }
 
+const getTodayFinesCollection = async () => {
+    try {
+        return await fineRepository.getTodayFinesCollection();
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createFine = async (req) => {
     try {
         return await fineRepository.createFine(req);
@@ -100,6 +108,7 @@ module.exports = {
     findAllFinesBySearchWithPagination,
     findAllFinesWithPaginationByAuthUser,
     findAllFinesBySearchWithPaginationByAuthUser,
+    getTodayFinesCollection,
     createFine,
     findFineById,
     findFineByIdWithByAuthUser,

@@ -28,6 +28,11 @@ const findAllFinesBySearchWithPaginationByAuthUser = asyncErrorHandler(async (re
     await sendResponse(resp, 200, finesWithPagination);
 });
 
+const getTodayFinesCollection = asyncErrorHandler(async (req, resp, next) => {
+    const finesCollection = await fineService.getTodayFinesCollection();
+    await sendResponse(resp, 200, {finesCollection});
+});
+
 const createFine = asyncErrorHandler(async (req, resp, next) => {
     const fines = await fineService.createFine(req);
     await sendResponse(resp, 201, {fines});
@@ -59,6 +64,7 @@ module.exports = {
     findAllFinesBySearchWithPagination,
     findAllFinesWithPaginationByAuthUser,
     findAllFinesBySearchWithPaginationByAuthUser,
+    getTodayFinesCollection,
     createFine,
     findFineById,
     findFineByIdWithByAuthUser,

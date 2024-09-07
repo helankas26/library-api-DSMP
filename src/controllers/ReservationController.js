@@ -28,6 +28,11 @@ const findAllReservationsBySearchWithPaginationByAuthUser = asyncErrorHandler(as
     await sendResponse(resp, 200, reservationsWithPagination);
 });
 
+const findAllReserved = asyncErrorHandler(async (req, resp, next) => {
+    const reservations = await reservationService.findAllReserved(req);
+    await sendResponse(resp, 200, {reservations: reservations, count: reservations.length});
+});
+
 const createReservation = asyncErrorHandler(async (req, resp, next) => {
     const reservation = await reservationService.createReservation(req);
     await sendResponse(resp, 201, {reservation});
@@ -69,6 +74,7 @@ module.exports = {
     findAllReservationsBySearchWithPagination,
     findAllReservationsWithPaginationByAuthUser,
     findAllReservationsBySearchWithPaginationByAuthUser,
+    findAllReserved,
     createReservation,
     findReservationById,
     findReservationByIdWithByAuthUser,

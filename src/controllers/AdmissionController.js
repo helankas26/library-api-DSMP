@@ -18,6 +18,11 @@ const findAllAdmissionsBySearchWithPagination = asyncErrorHandler(async (req, re
     await sendResponse(resp, 200, admissionsWithPagination);
 });
 
+const getTodayAdmissionsCollection = asyncErrorHandler(async (req, resp, next) => {
+    const admissionsCollection = await admissionService.getTodayAdmissionsCollection();
+    await sendResponse(resp, 200, {admissionsCollection});
+});
+
 const createAdmission = asyncErrorHandler(async (req, resp, next) => {
     const admission = await admissionService.createAdmission(req);
     await sendResponse(resp, 201, {admission});
@@ -42,6 +47,7 @@ module.exports = {
     findAllAdmissions,
     findAllAdmissionsWithPagination,
     findAllAdmissionsBySearchWithPagination,
+    getTodayAdmissionsCollection,
     createAdmission,
     findAdmissionById,
     updateAdmission,

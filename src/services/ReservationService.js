@@ -54,6 +54,14 @@ const findAllReservationsBySearchWithPaginationByAuthUser = async (req) => {
     }
 }
 
+const findAllReserved = async (req) => {
+    try {
+        return await reservationRepository.findAllReserved(req);
+    } catch (error) {
+        throw error;
+    }
+}
+
 const createReservation = async (req) => {
     try {
         return await reservationRepository.createReservation(req);
@@ -116,6 +124,7 @@ module.exports = {
     findAllReservationsBySearchWithPagination,
     findAllReservationsWithPaginationByAuthUser,
     findAllReservationsBySearchWithPaginationByAuthUser,
+    findAllReserved,
     createReservation,
     findReservationById,
     findReservationByIdWithByAuthUser,

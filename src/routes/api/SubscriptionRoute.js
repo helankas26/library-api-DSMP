@@ -28,6 +28,9 @@ router.route('/auth/list')
 router.route('/auth/query')
     .get(authMiddleware.checkPermission('USER'), subscriptionController.findAllSubscriptionsBySearchWithPaginationByAuthUser);
 
+router.route('/today-collection')
+    .get(authMiddleware.checkPermission('ADMIN'), subscriptionController.getTodaySubscriptionsCollection);
+
 router.route('/:id')
     .get(authMiddleware.checkPermission('ADMIN'), subscriptionController.findSubscriptionById)
     .patch(authMiddleware.checkPermission('ADMIN'), subscriptionController.updateSubscription)

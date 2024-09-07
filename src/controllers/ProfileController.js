@@ -33,6 +33,18 @@ const findAllMembersPaymentStatusBySearch = asyncErrorHandler(async (req, resp, 
     await sendResponse(resp, 200, membersPaymentStatus);
 });
 
+const findAllPaymentArrears = asyncErrorHandler(async (req, resp, next) => {
+    const result = await profileService.findAllPaymentArrears(req);
+
+    const {role} = req.user;
+
+    if (role === 'ADMIN') {
+        await sendResponse(resp, 200, {profiles: result, count: result.length});
+    } else if (role === 'USER') {
+        await sendResponse(resp, 200, {profile: result, count: result.payments.length});
+    }
+});
+
 const createProfile = asyncErrorHandler(async (req, resp, next) => {
     const profileWithAdmission = await profileService.createProfile(req);
     await sendResponse(resp, 201, profileWithAdmission);
@@ -90,6 +102,7 @@ module.exports = {
     findAllProfilesBySearchWithPagination,
     findAllMembersPaymentStatus,
     findAllMembersPaymentStatusBySearch,
+    findAllPaymentArrears,
     createProfile,
     findProfileById,
     findMemberPaymentStatusById,

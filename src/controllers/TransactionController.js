@@ -28,6 +28,11 @@ const findAllTransactionsBySearchWithPaginationByAuthUser = asyncErrorHandler(as
     await sendResponse(resp, 200, transactionsWithPagination);
 });
 
+const findAllOverdue = asyncErrorHandler(async (req, resp, next) => {
+    const transactions = await transactionService.findAllOverdue(req);
+    await sendResponse(resp, 200, {transactions: transactions, count: transactions.length});
+});
+
 const createTransaction = asyncErrorHandler(async (req, resp, next) => {
     const transaction = await transactionService.createTransaction(req);
     await sendResponse(resp, 201, {transaction});
@@ -69,6 +74,7 @@ module.exports = {
     findAllTransactionsBySearchWithPagination,
     findAllTransactionsWithPaginationByAuthUser,
     findAllTransactionsBySearchWithPaginationByAuthUser,
+    findAllOverdue,
     createTransaction,
     findTransactionById,
     findTransactionByIdWithByAuthUser,
