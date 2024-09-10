@@ -3,6 +3,7 @@ const crypto = require("crypto");
 const userRepository = require('../repositories/UserRepository');
 const PasswordDoesNotMatchError = require("../errors/PasswordDoesNotMatchError");
 const tokenGenerate = require("../utils/TokenGenerateUtil");
+const {REFRESH_TOKEN_EXPIRES} = require('../config/serverConfig');
 
 
 const findAllUsers = async () => {
@@ -83,7 +84,7 @@ const changeUserPasswordByAuthUser = async (req, res) => {
         user.password = undefined;
         user.refreshToken = undefined;
 
-        return {user, accessToken};
+        return {user, accessToken, refreshTokenExpires: parseInt(REFRESH_TOKEN_EXPIRES)};
     } catch (error) {
         throw error;
     }
