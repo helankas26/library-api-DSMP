@@ -151,11 +151,9 @@ const createTransaction = async (req) => {
 
         const transactionData = req.body;
 
-        const [profile, config, books] = await Promise.all([
-            Profile.findById(transactionData.member).session(session),
-            Config.findOne().session(session),
-            Book.find({_id: {$in: transactionData.books}}).session(session)
-        ]);
+        const profile = await Profile.findById(transactionData.member).session(session);
+        const config = await Config.findOne().session(session);
+        const books = await Book.find({_id: {$in: transactionData.books}}).session(session);
 
         if (!profile) throw new NotFoundError("Member not found. Transaction unsuccessful. Try again!");
         if (!config) throw new NotFoundError("Configuration not found. Transaction unsuccessful. Try again!");

@@ -259,7 +259,7 @@ const getMemberAvailableReservationsById = async (params) => {
             .populate({
                 path: 'reservations',
                 match: {status: {$in: ['RESERVED']}},
-                populate: {path: 'book', model: 'Book', select: ['-cover', '-description', '-createdAt']}
+                populate: {path: 'book', model: 'Book', select: ['-description', '-createdAt']}
             });
     } catch (error) {
         throw error;
